@@ -4,11 +4,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.ui.components.AppBottomBar
+import it.polito.thesisapp.utils.FirestoreConstants
 
+/**
+ * Composable function that displays the main screen of the application.
+ * It sets up the navigation host and the bottom navigation bar.
+ */
+@Preview
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -18,12 +26,10 @@ fun MainScreen() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = Screen.HOME_ROUTE,
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable("home") { HomeScreen() }
-            composable("detail") { DetailScreen() }
-            composable("list") { ListScreen() }
+            composable(Screen.HOME_ROUTE) { HomeScreen(FirestoreConstants.UserID.USERID) }
         }
     }
 }

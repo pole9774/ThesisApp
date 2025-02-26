@@ -13,13 +13,18 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import it.polito.thesisapp.navigation.Screen
 
+/**
+ * Composable function that displays the bottom navigation bar.
+ *
+ * @param navController The NavController used to handle navigation events.
+ */
 @Composable
 fun AppBottomBar(navController: NavController) {
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
-        Screen.items.forEach { screen ->
+        Screen.screens.forEach { screen ->
             NavigationBarItem(
                 icon = { Icon(painterResource(screen.icon), contentDescription = null) },
                 label = { Text(screen.label) },
