@@ -2,17 +2,22 @@ package it.polito.thesisapp.repository
 
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.Team
 import it.polito.thesisapp.model.TeamMember
-import it.polito.thesisapp.utils.FirestoreConstants
+import it.polito.thesisapp.utils.Constants
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class TeamRepository {
+    private val db = FirebaseFirestore.getInstance()
+
     /**
      * Creates a Flow that emits Team objects based on Firestore updates.
      * The flow handles team data, members, and tasks with their assigned members.
@@ -66,7 +71,7 @@ class TeamRepository {
         teamRef: DocumentReference,
         team: Team
     ) {
-        teamRef.collection(FirestoreConstants.FirestoreCollections.TEAM_MEMBERS)
+        teamRef.collection(Constants.FirestoreCollections.TEAM_MEMBERS)
             .addSnapshotListener { membersSnapshot, membersError ->
                 handleMembersSnapshot(membersSnapshot, membersError, teamRef, team)
             }
@@ -93,8 +98,8 @@ class TeamRepository {
 
         val members = membersSnapshot?.documents?.mapNotNull { doc ->
             TeamMember(
-                role = doc.getString(FirestoreConstants.FirestoreFields.TeamMember.ROLE) ?: "",
-                profileRef = doc.get(FirestoreConstants.FirestoreFields.TeamMember.PROFILE_REF) as? DocumentReference
+                role = doc.getString(Constants.FirestoreFields.TeamMember.ROLE) ?: "",
+                profileRef = doc.get(Constants.FirestoreFields.TeamMember.PROFILE_REF) as? DocumentReference
             )
         } ?: emptyList()
 
@@ -113,7 +118,7 @@ class TeamRepository {
         team: Team,
         members: List<TeamMember>
     ) {
-        teamRef.collection(FirestoreConstants.FirestoreCollections.TEAM_TASKS)
+        teamRef.collection(Constants.FirestoreCollections.TEAM_TASKS)
             .addSnapshotListener { tasksSnapshot, tasksError ->
                 handleTasksSnapshot(tasksSnapshot, tasksError, team, members)
             }
@@ -156,7 +161,7 @@ class TeamRepository {
             )
 
             // Set up snapshot listener for assigned members
-            taskDoc.reference.collection(FirestoreConstants.FirestoreCollections.TASK_ASSIGNED_MEMBERS)
+            taskDoc.reference.collection(Constants.FirestoreCollections.TASK_ASSIGNED_MEMBERS)
                 .addSnapshotListener { assignedMembersSnapshot, assignedMembersError ->
                     if (assignedMembersError != null) {
                         close(assignedMembersError)
@@ -164,7 +169,7 @@ class TeamRepository {
                     }
 
                     val assignedMembers = assignedMembersSnapshot?.documents
-                        ?.mapNotNull { it.get(FirestoreConstants.FirestoreFields.AssignedMember.MEMBER_REF) as? DocumentReference }
+                        ?.mapNotNull { it.get(Constants.FirestoreFields.AssignedMember.MEMBER_REF) as? DocumentReference }
                         ?: emptyList()
 
                     tasksMap[task.id] = task.copy(assignedMembers = assignedMembers)
@@ -196,7 +201,7 @@ class TeamRepository {
         team: Team,
         members: List<TeamMember>
     ) {
-        taskRef.collection(FirestoreConstants.FirestoreCollections.TASK_ASSIGNED_MEMBERS)
+        taskRef.collection(Constants.FirestoreCollections.TASK_ASSIGNED_MEMBERS)
             .addSnapshotListener { assignedMembersSnapshot, error ->
                 if (error != null) {
                     close(error)
@@ -204,7 +209,7 @@ class TeamRepository {
                 }
 
                 val assignedMembers = assignedMembersSnapshot?.documents
-                    ?.mapNotNull { it.get(FirestoreConstants.FirestoreFields.AssignedMember.MEMBER_REF) as? DocumentReference }
+                    ?.mapNotNull { it.get(Constants.FirestoreFields.AssignedMember.MEMBER_REF) as? DocumentReference }
                     ?: emptyList()
 
                 val updatedTask = task.copy(assignedMembers = assignedMembers)
@@ -218,5 +223,33 @@ class TeamRepository {
 
                 trySend(team.copy(members = members, tasks = tasks))
             }
+    }
+
+    suspend fun createTeam(teamName: String): DocumentReference {
+        val teamRef = db.collection(Constants.FirestoreCollections.TEAMS)
+            .add(
+                mapOf(
+                    Constants.FirestoreFields.Team.NAME to teamName
+                )
+            ).await()
+
+        teamRef.collection(Constants.FirestoreCollections.TEAM_MEMBERS)
+            .add(
+                mapOf(
+                    Constants.FirestoreFields.TeamMember.ROLE to Constants.FirestoreValues.TeamMemberRole.ADMIN,
+                    Constants.FirestoreFields.TeamMember.PROFILE_REF to db.collection(
+                        Constants.FirestoreCollections.PROFILES
+                    ).document(Constants.User.USER_ID)
+                )
+            ).await()
+
+        db.collection(Constants.FirestoreCollections.PROFILES)
+            .document(Constants.User.USER_ID)
+            .update(
+                Constants.FirestoreFields.Profile.TEAMS,
+                FieldValue.arrayUnion(teamRef)
+            ).await()
+
+        return teamRef
     }
 }

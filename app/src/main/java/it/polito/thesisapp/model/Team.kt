@@ -1,6 +1,6 @@
 package it.polito.thesisapp.model
 
-import it.polito.thesisapp.utils.FirestoreConstants
+import it.polito.thesisapp.utils.Constants
 
 /**
  * Data class representing a team.
@@ -27,7 +27,7 @@ data class Team(
         fun fromFirestore(id: String, data: Map<String, Any>): Team {
             return Team(
                 id = id,
-                name = data[FirestoreConstants.FirestoreFields.Team.NAME] as? String ?: "",
+                name = data[Constants.FirestoreFields.Team.NAME] as? String ?: "",
                 members = emptyList(),
                 tasks = emptyList()
             )

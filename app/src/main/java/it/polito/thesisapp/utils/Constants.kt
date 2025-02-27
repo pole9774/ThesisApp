@@ -1,6 +1,6 @@
 package it.polito.thesisapp.utils
 
-object FirestoreConstants {
+object Constants {
     /**
      * Object containing constants for Firestore document field names.
      * This helps maintain consistency and avoid string literals in repository classes.
@@ -18,6 +18,7 @@ object FirestoreConstants {
 
         object Team {
             const val NAME = "name"
+            const val TEAM_ID = "teamId"
         }
 
         /**
@@ -41,6 +42,12 @@ object FirestoreConstants {
          */
         object AssignedMember {
             const val MEMBER_REF = "memberRef"
+        }
+    }
+
+    object FirestoreValues {
+        object TeamMemberRole {
+            const val ADMIN = "ADMIN"
         }
     }
 
@@ -78,10 +85,14 @@ object FirestoreConstants {
     /**
      * Object that contains a constant for the user ID.
      */
-    object UserID {
+    object User {
         /**
          * Constant for the user ID.
          */
-        const val USERID = "1kCdRXoPkwmsNI5QRKn9"
+        const val USER_ID = "1kCdRXoPkwmsNI5QRKn9"
+    }
+
+    object Tags {
+        const val TEAM_NAME = "teamName"
     }
 }

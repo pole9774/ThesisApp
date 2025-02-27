@@ -20,14 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.Team
+import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.HomeViewModel
 
 /**
@@ -37,7 +37,8 @@ import it.polito.thesisapp.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     userId: String,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = AppViewModelProvider.homeViewModel(),
+    onNavigateToTeam: (String) -> Unit
 ) {
     val profile by viewModel.profile.collectAsState()
     val teams by viewModel.teams.collectAsState()
@@ -55,7 +56,11 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         WelcomeSection(profile)
-        TeamSection(teams, pagerState)
+        TeamSection(
+            teams,
+            pagerState,
+            onTeamClick = onNavigateToTeam
+        )
         HorizontalDivider()
         TasksSection(currentTeam?.tasks ?: emptyList())
     }
@@ -134,7 +139,8 @@ private fun TaskCard(task: Task) {
 @Composable
 private fun TeamSection(
     teams: List<Team>,
-    pagerState: PagerState
+    pagerState: PagerState,
+    onTeamClick: (String) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -155,7 +161,8 @@ private fun TeamSection(
                 team = teams[page],
                 modifier = Modifier
                     .padding(4.dp)
-                    .width(200.dp)
+                    .width(200.dp),
+                onTeamClick = onTeamClick
             )
         }
     }
@@ -170,16 +177,19 @@ private fun TeamSection(
 @Composable
 private fun TeamCard(
     team: Team,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTeamClick: (String) -> Unit
 ) {
     ElevatedCard(
-        modifier = modifier
+        modifier = modifier,
+        onClick = { onTeamClick(team.id) }
     ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = team.name,

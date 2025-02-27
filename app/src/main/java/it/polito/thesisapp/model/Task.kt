@@ -1,7 +1,7 @@
 package it.polito.thesisapp.model
 
 import com.google.firebase.firestore.DocumentReference
-import it.polito.thesisapp.utils.FirestoreConstants
+import it.polito.thesisapp.utils.Constants
 
 /**
  * Data class representing a task.
@@ -28,8 +28,8 @@ data class Task(
         fun fromFirestore(id: String, data: Map<String, Any>): Task {
             return Task(
                 id = id,
-                name = data[FirestoreConstants.FirestoreFields.Task.NAME] as? String ?: "",
-                description = data[FirestoreConstants.FirestoreFields.Task.DESCRIPTION] as? String
+                name = data[Constants.FirestoreFields.Task.NAME] as? String ?: "",
+                description = data[Constants.FirestoreFields.Task.DESCRIPTION] as? String
                     ?: "",
                 assignedMembers = emptyList()
             )

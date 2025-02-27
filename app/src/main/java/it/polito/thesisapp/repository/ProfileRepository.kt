@@ -3,7 +3,7 @@ package it.polito.thesisapp.repository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import it.polito.thesisapp.model.Profile
-import it.polito.thesisapp.utils.FirestoreConstants
+import it.polito.thesisapp.utils.Constants
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.callbackFlow
  */
 class ProfileRepository {
     private val db = Firebase.firestore
-    private val profilesCollection = db.collection(FirestoreConstants.FirestoreCollections.PROFILES)
+    private val profilesCollection = db.collection(Constants.FirestoreCollections.PROFILES)
 
     /**
      * Retrieves a flow of Profile objects for a given user ID.
