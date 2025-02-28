@@ -80,6 +80,7 @@ object Constants {
         private const val TEAM_BASE = "team"
         private const val CREATE_TEAM_BASE = "create_team"
         private const val CREATE_TASK_BASE = "create_task"
+        private const val PROFILE_BASE = "profile"
 
         // Parameters
         object Params {
@@ -92,6 +93,7 @@ object Constants {
             const val TEAM = "${TEAM_BASE}/{${Params.TEAM_ID}}"
             const val CREATE_TEAM = "${CREATE_TEAM_BASE}/"
             const val CREATE_TASK = "${CREATE_TASK_BASE}/{${Params.TEAM_ID}}"
+            const val PROFILE = "${PROFILE_BASE}/"
         }
 
         // Tags for saved state

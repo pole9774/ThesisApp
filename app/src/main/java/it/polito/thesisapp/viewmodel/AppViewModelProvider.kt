@@ -38,6 +38,11 @@ object AppViewModelProvider {
         CreateTaskViewModel(teamRepository)
     }
 
+    @Composable
+    fun profileViewModel(): ProfileViewModel = viewModel {
+        ProfileViewModel(profileRepository)
+    }
+
     // Helper function for non-composable contexts
     fun getTeamViewModel(
         viewModelStoreOwner: ViewModelStoreOwner,
@@ -65,5 +70,12 @@ object AppViewModelProvider {
         factory: ViewModelProvider.Factory
     ): CreateTaskViewModel {
         return ViewModelProvider(viewModelStoreOwner, factory)[CreateTaskViewModel::class.java]
+    }
+
+    fun getProfileViewModel(
+        viewModelStoreOwner: ViewModelStoreOwner,
+        factory: ViewModelProvider.Factory
+    ): ProfileViewModel {
+        return ViewModelProvider(viewModelStoreOwner, factory)[ProfileViewModel::class.java]
     }
 }

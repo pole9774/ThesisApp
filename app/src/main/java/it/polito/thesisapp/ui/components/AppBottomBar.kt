@@ -10,15 +10,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import it.polito.thesisapp.navigation.NavigationManager
+import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.ui.LocalNavController
-import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 
-/**
- * Composable function that displays the bottom navigation bar.
- *
- * @param navController The NavController used to handle navigation events.
- */
+
 @Composable
 fun AppBottomBar(navigationManager: NavigationManager) {
     val navController = LocalNavController.current
@@ -33,7 +29,10 @@ fun AppBottomBar(navigationManager: NavigationManager) {
                 label = { Text(screen.label) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navigationManager.navigate(NavigationEvent.NavigateToHomeWithClearBackStack)
+                    when (screen) {
+                        Screen.Home -> navigationManager.navigate(NavigationEvent.NavigateToHomeWithClearBackStack)
+                        Screen.Profile -> navigationManager.navigate(NavigationEvent.NavigateToProfile)
+                    }
                 }
             )
         }

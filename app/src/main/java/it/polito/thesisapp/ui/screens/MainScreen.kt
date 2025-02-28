@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.navigation.homeGraph
+import it.polito.thesisapp.navigation.profileGraph
 import it.polito.thesisapp.navigation.teamGraph
 import it.polito.thesisapp.ui.LocalNavController
 import it.polito.thesisapp.ui.LocalNavigationManager
@@ -56,6 +57,7 @@ fun MainScreen() {
             ) {
                 homeGraph(navigationManager)
                 teamGraph(navigationManager)
+                profileGraph(navigationManager)
             }
         }
     }

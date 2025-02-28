@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.TeamViewModel
 
@@ -21,6 +22,7 @@ fun TeamScreen(
     viewModel: TeamViewModel = AppViewModelProvider.teamViewModel()
 ) {
     val team by viewModel.team.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(teamId) {
         viewModel.loadTeam(teamId)
@@ -32,9 +34,13 @@ fun TeamScreen(
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = team?.name ?: "Loading...",
-            style = MaterialTheme.typography.headlineMedium
-        )
+        if (isLoading) {
+            LoadingIndicator()
+        } else {
+            Text(
+                text = team?.name ?: "Team not found",
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
     }
 }

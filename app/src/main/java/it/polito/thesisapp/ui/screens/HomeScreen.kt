@@ -1,6 +1,7 @@
 package it.polito.thesisapp.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.Team
+import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.HomeViewModel
 
@@ -42,6 +44,7 @@ fun HomeScreen(
 ) {
     val profile by viewModel.profile.collectAsState()
     val teams by viewModel.teams.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     val pagerState = rememberPagerState { teams.size }
     val currentTeam = teams.getOrNull(pagerState.currentPage)
 
@@ -49,20 +52,26 @@ fun HomeScreen(
         viewModel.loadProfile(userId)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        WelcomeSection(profile)
-        TeamSection(
-            teams,
-            pagerState,
-            onTeamClick = onNavigateToTeam
-        )
-        HorizontalDivider()
-        TasksSection(currentTeam?.tasks ?: emptyList())
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isLoading) {
+            LoadingIndicator()
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                WelcomeSection(profile)
+                TeamSection(
+                    teams,
+                    pagerState,
+                    onTeamClick = onNavigateToTeam
+                )
+                HorizontalDivider()
+                TasksSection(currentTeam?.tasks ?: emptyList())
+            }
+        }
     }
 }
 

@@ -24,6 +24,7 @@ class NavigationManager(private val navController: NavController) {
         data class NavigateToCreateTask(val teamId: String) : NavigationEvent()
         object NavigateToHomeAfterTeamCreation : NavigationEvent()
         data class NavigateToTeamAfterTaskCreation(val teamId: String) : NavigationEvent()
+        object NavigateToProfile : NavigationEvent()
     }
 
     /**
@@ -43,6 +44,8 @@ class NavigationManager(private val navController: NavController) {
             is NavigationEvent.NavigateToTeamAfterTaskCreation -> navigateToTeamAfterTaskCreation(
                 event.teamId
             )
+
+            is NavigationEvent.NavigateToProfile -> navigateToProfile()
         }
     }
 
@@ -104,6 +107,10 @@ class NavigationManager(private val navController: NavController) {
             .build()
 
         navController.navigate(Screen.buildTeamRoute(teamId), navOptions)
+    }
+
+    private fun navigateToProfile() {
+        navController.navigate(Screen.buildProfileRoute())
     }
 
     /**

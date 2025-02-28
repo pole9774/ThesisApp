@@ -22,6 +22,8 @@ sealed class Screen(val route: String, val icon: Int, val label: String) {
                 teamId
             )
 
+        fun buildProfileRoute() = Constants.Navigation.Routes.PROFILE
+
         fun isHomeRoute(route: String?): Boolean {
             return route == Constants.Navigation.Routes.HOME
         }
@@ -38,11 +40,17 @@ sealed class Screen(val route: String, val icon: Int, val label: String) {
             return route?.startsWith(Constants.Navigation.Routes.CREATE_TASK.substringBefore("{")) == true
         }
 
-        val screensBottomBar = listOf(Home)
+        fun isProfileRoute(route: String?): Boolean {
+            return route == Constants.Navigation.Routes.PROFILE
+        }
+
+        val screensBottomBar = listOf(Home, Profile)
     }
 
     /**
      * Object representing the Home screen.
      */
     data object Home : Screen(Constants.Navigation.Routes.HOME, R.drawable.ic_home, "Home")
+    data object Profile :
+        Screen(Constants.Navigation.Routes.PROFILE, R.drawable.ic_profile, "Profile")
 }

@@ -21,15 +21,20 @@ class HomeViewModel(
     private val _teams = MutableStateFlow<List<Team>>(emptyList())
     val teams: StateFlow<List<Team>> = _teams
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading
+
     fun loadProfile(userId: String) {
         viewModelScope.launch {
             try {
+                _isLoading.value = true
                 profileRepository.getProfileFlow(userId).collect { profile ->
                     _profile.value = profile
                     loadTeams(profile?.teams ?: emptyList())
                 }
             } catch (e: Exception) {
                 setError(e.message)
+                _isLoading.value = false
             }
         }
     }
@@ -40,21 +45,27 @@ class HomeViewModel(
                 _teams.value = emptyList()
                 val teamsMap = mutableMapOf<String, Team>()
 
+                if (teamRefs.isEmpty()) {
+                    _isLoading.value = false
+                    return@launch
+                }
+
                 teamRefs.forEach { ref ->
                     viewModelScope.launch {
                         teamRepository.getTeamFlow(ref).collect { team ->
                             if (team != null) {
                                 teamsMap[team.id] = team
-                                _teams.value = teamsMap.values.sortedBy { it.name }
                             } else {
                                 teamsMap.remove(ref.id)
-                                _teams.value = teamsMap.values.sortedBy { it.name }
                             }
+                            _teams.value = teamsMap.values.sortedBy { it.name }
+                            _isLoading.value = false
                         }
                     }
                 }
             } catch (e: Exception) {
                 setError(e.message)
+                _isLoading.value = false
             }
         }
     }

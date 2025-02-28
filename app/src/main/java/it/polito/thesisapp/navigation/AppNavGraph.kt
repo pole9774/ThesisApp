@@ -4,12 +4,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 import it.polito.thesisapp.ui.screens.CreateTaskScreen
 import it.polito.thesisapp.ui.screens.CreateTeamScreen
 import it.polito.thesisapp.ui.screens.HomeScreen
+import it.polito.thesisapp.ui.screens.ProfileScreen
 import it.polito.thesisapp.ui.screens.TeamScreen
 import it.polito.thesisapp.utils.Constants
-import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 
 fun NavGraphBuilder.homeGraph(
     navigationManager: NavigationManager,
@@ -62,5 +63,11 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
                 )
             }
         )
+    }
+}
+
+fun NavGraphBuilder.profileGraph(navigationManager: NavigationManager) {
+    composable(Screen.buildProfileRoute()) {
+        ProfileScreen(userId = Constants.User.USER_ID)
     }
 }
