@@ -1,7 +1,7 @@
 package it.polito.thesisapp.navigation
 
-import android.util.Log
 import it.polito.thesisapp.R
+import it.polito.thesisapp.utils.Constants
 
 /**
  * Sealed class representing different screens in the application.
@@ -9,50 +9,33 @@ import it.polito.thesisapp.R
  */
 sealed class Screen(val route: String, val icon: Int, val label: String) {
     companion object {
-        /**
-         * Route constant for the Home screen.
-         */
-        private const val HOME_ROUTE = "home/"
+        fun buildHomeRoute() = Constants.Navigation.Routes.HOME
+        fun buildTeamRoute(teamId: String) = Constants.Navigation.Routes.TEAM.replace(
+            "{${Constants.Navigation.Params.TEAM_ID}}",
+            teamId
+        )
 
-        private const val TEAM_ROUTE = "team/"
-
-        private const val CREATE_TEAM_ROUTE = "create_team/"
-
-        private const val CREATE_TASK_ROUTE = "create_task/"
-
-        fun buildHomeRoute() = HOME_ROUTE
-        fun buildTeamRoute(teamId: String) = TEAM_ROUTE + teamId
-        fun buildCreateTeamRoute() = CREATE_TEAM_ROUTE
-        fun buildCreateTaskRoute(teamId: String): String {
-            Log.d("AAA", "teamId in createTaskRoute: $teamId")
-            return CREATE_TASK_ROUTE + teamId
-        }
+        fun buildCreateTeamRoute() = Constants.Navigation.Routes.CREATE_TEAM
+        fun buildCreateTaskRoute(teamId: String): String =
+            Constants.Navigation.Routes.CREATE_TASK.replace(
+                "{${Constants.Navigation.Params.TEAM_ID}}",
+                teamId
+            )
 
         fun isHomeRoute(route: String?): Boolean {
-            return route == HOME_ROUTE
+            return route == Constants.Navigation.Routes.HOME
         }
 
         fun isTeamRoute(route: String?): Boolean {
-            return route?.startsWith(TEAM_ROUTE) == true
+            return route?.startsWith(Constants.Navigation.Routes.TEAM.substringBefore("{")) == true
         }
 
         fun isCreateTeamRoute(route: String?): Boolean {
-            return route?.startsWith(CREATE_TEAM_ROUTE) == true
+            return route?.startsWith(Constants.Navigation.Routes.CREATE_TEAM) == true
         }
 
         fun isCreateTaskRoute(route: String?): Boolean {
-            return route?.startsWith(CREATE_TASK_ROUTE) == true
-        }
-
-        fun getTeamId(route: String?): String? {
-            return when {
-                route?.startsWith(TEAM_ROUTE) == true -> route.substringAfter(TEAM_ROUTE)
-                route?.startsWith(CREATE_TASK_ROUTE) == true -> route.substringAfter(
-                    CREATE_TASK_ROUTE
-                )
-
-                else -> null
-            }
+            return route?.startsWith(Constants.Navigation.Routes.CREATE_TASK.substringBefore("{")) == true
         }
 
         val screensBottomBar = listOf(Home)
@@ -61,5 +44,5 @@ sealed class Screen(val route: String, val icon: Int, val label: String) {
     /**
      * Object representing the Home screen.
      */
-    data object Home : Screen(HOME_ROUTE, R.drawable.ic_home, "Home")
+    data object Home : Screen(Constants.Navigation.Routes.HOME, R.drawable.ic_home, "Home")
 }

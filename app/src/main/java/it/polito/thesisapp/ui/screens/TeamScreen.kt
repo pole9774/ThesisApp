@@ -23,7 +23,7 @@ fun TeamScreen(
     val team by viewModel.team.collectAsState()
 
     LaunchedEffect(teamId) {
-        viewModel.loadTimes(teamId)
+        viewModel.loadTeam(teamId)
     }
 
     Box(

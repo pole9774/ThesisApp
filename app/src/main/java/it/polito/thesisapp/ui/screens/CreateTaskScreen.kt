@@ -37,8 +37,8 @@ fun CreateTaskScreen(
     val error by viewModel.error.collectAsState()
 
     LaunchedEffect(taskName, taskDescription) {
-        navigationManager.setArgument(Constants.Tags.TASK_NAME, taskName)
-        navigationManager.setArgument(Constants.Tags.TASK_DESCRIPTION, taskDescription)
+        navigationManager.setArgument(Constants.Navigation.Tags.TASK_NAME, taskName)
+        navigationManager.setArgument(Constants.Navigation.Tags.TASK_DESCRIPTION, taskDescription)
     }
 
     Box(

@@ -2,8 +2,18 @@ package it.polito.thesisapp.utils
 
 object Constants {
     /**
+     * Object containing Firestore collection names
+     */
+    object FirestoreCollections {
+        const val PROFILES = "profiles"
+        const val TEAMS = "teams"
+        const val TEAM_MEMBERS = "members"
+        const val TEAM_TASKS = "tasks"
+        const val TASK_ASSIGNED_MEMBERS = "assignedMembers"
+    }
+
+    /**
      * Object containing constants for Firestore document field names.
-     * This helps maintain consistency and avoid string literals in repository classes.
      */
     object FirestoreFields {
         /**
@@ -16,9 +26,14 @@ object Constants {
             const val TEAMS = "teams"
         }
 
+        /**
+         * Fields specific to Team documents
+         */
         object Team {
-            const val NAME = "name"
             const val TEAM_ID = "teamId"
+            const val NAME = "name"
+            const val MEMBERS = "members"
+            const val TASKS = "tasks"
         }
 
         /**
@@ -35,7 +50,7 @@ object Constants {
         object Task {
             const val NAME = "name"
             const val DESCRIPTION = "description"
-            const val TASK_ID = "taskId"
+            const val ASSIGNED_MEMBERS = "assignedMembers"
         }
 
         /**
@@ -46,56 +61,51 @@ object Constants {
         }
     }
 
+    /**
+     * Object containing values used in Firestore documents
+     */
     object FirestoreValues {
         object TeamMemberRole {
             const val ADMIN = "ADMIN"
+            const val MEMBER = "MEMBER"
         }
     }
 
     /**
-     * Object containing constants for Firestore collection names.
-     * This helps maintain consistency and avoid string literals in repository classes.
+     * Object containing navigation-related constants
      */
-    object FirestoreCollections {
-        /**
-         * Constant for the profiles collection.
-         */
-        const val PROFILES = "profiles"
+    object Navigation {
+        // Base routes
+        private const val HOME_BASE = "home"
+        private const val TEAM_BASE = "team"
+        private const val CREATE_TEAM_BASE = "create_team"
+        private const val CREATE_TASK_BASE = "create_task"
 
-        /**
-         * Constant for the teams collection.
-         */
-        const val TEAMS = "teams"
+        // Parameters
+        object Params {
+            const val TEAM_ID = "teamId"
+        }
 
-        /**
-         * Constant for the members subcollection within a team.
-         */
-        const val TEAM_MEMBERS = "members"
+        // Full route patterns with parameter placeholders
+        object Routes {
+            const val HOME = "${HOME_BASE}/"
+            const val TEAM = "${TEAM_BASE}/{${Params.TEAM_ID}}"
+            const val CREATE_TEAM = "${CREATE_TEAM_BASE}/"
+            const val CREATE_TASK = "${CREATE_TASK_BASE}/{${Params.TEAM_ID}}"
+        }
 
-        /**
-         * Constant for the tasks subcollection within a team.
-         */
-        const val TEAM_TASKS = "tasks"
-
-        /**
-         * Constant for the assigned members subcollection within a task.
-         */
-        const val TASK_ASSIGNED_MEMBERS = "assignedMembers"
+        // Tags for saved state
+        object Tags {
+            const val TEAM_NAME = "teamName"
+            const val TASK_NAME = "taskName"
+            const val TASK_DESCRIPTION = "taskDescription"
+        }
     }
 
     /**
-     * Object that contains a constant for the user ID.
+     * Object containing user-related constants
      */
     object User {
-        /**
-         * Constant for the user ID.
-         */
         const val USER_ID = "1kCdRXoPkwmsNI5QRKn9"
-    }
-
-    object Tags {
-        const val TEAM_NAME = "teamName"
-        const val TASK_NAME = "taskName"
-        const val TASK_DESCRIPTION = "taskDescription"
     }
 }

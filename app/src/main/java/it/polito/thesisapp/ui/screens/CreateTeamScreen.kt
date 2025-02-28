@@ -35,7 +35,7 @@ fun CreateTeamScreen(
     val error by viewModel.error.collectAsState()
 
     LaunchedEffect(teamName) {
-        navigationManager.setArgument(Constants.Tags.TEAM_NAME, teamName)
+        navigationManager.setArgument(Constants.Navigation.Tags.TEAM_NAME, teamName)
     }
 
     Box(

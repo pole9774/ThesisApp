@@ -31,7 +31,6 @@ class NavigationManager(private val navController: NavController) {
      * @param teamId The ID of the team to display.
      */
     fun navigateToTeam(teamId: String) {
-        Log.d("AAA", "teamId in navigateToTeam: $teamId")
         navController.navigate(Screen.buildTeamRoute(teamId))
     }
 
@@ -50,7 +49,6 @@ class NavigationManager(private val navController: NavController) {
     }
 
     fun navigateToCreateTask(teamId: String) {
-        Log.d("AAA", "teamId in navigateToCreateTask: $teamId")
         navController.navigate(Screen.buildCreateTaskRoute(teamId))
     }
 

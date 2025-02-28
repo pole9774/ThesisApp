@@ -32,23 +32,23 @@ fun NavGraphBuilder.homeGraph(
 
 fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
     composable(
-        route = "team/{${Constants.FirestoreFields.Team.TEAM_ID}}",
+        route = Constants.Navigation.Routes.TEAM,
         arguments = listOf(
-            navArgument(Constants.FirestoreFields.Team.TEAM_ID) { type = NavType.StringType }
+            navArgument(Constants.Navigation.Params.TEAM_ID) { type = NavType.StringType }
         )
     ) { backStackEntry ->
-        val teamId = backStackEntry.arguments?.getString(Constants.FirestoreFields.Team.TEAM_ID)
+        val teamId = backStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
         TeamScreen(teamId = teamId)
     }
 
     composable(
-        route = "create_task/{${Constants.FirestoreFields.Team.TEAM_ID}}",
-        arguments = listOf(navArgument(Constants.FirestoreFields.Team.TEAM_ID) {
+        route = Constants.Navigation.Routes.CREATE_TASK,
+        arguments = listOf(navArgument(Constants.Navigation.Params.TEAM_ID) {
             type = NavType.StringType
         })
     ) { backStackEntry ->
-        val teamId = backStackEntry.arguments?.getString(Constants.FirestoreFields.Team.TEAM_ID)
+        val teamId = backStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
         CreateTaskScreen(
             teamId = teamId,

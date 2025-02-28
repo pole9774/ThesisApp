@@ -1,6 +1,5 @@
 package it.polito.thesisapp.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.polito.thesisapp.repository.TeamRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,17 +8,13 @@ import kotlinx.coroutines.launch
 
 class CreateTeamViewModel(
     private val repository: TeamRepository = TeamRepository()
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _teamCreated = MutableStateFlow(false)
     val teamCreated: StateFlow<Boolean> = _teamCreated
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
-
-    fun createTeam(teamName: String) {
-        if (teamName.isBlank()) {
-            _error.value = "Team name cannot be blank"
+    private fun createTeam(teamName: String) {
+        if (!validateNotBlank(teamName, "Team name")) {
             return
         }
 
@@ -27,18 +22,17 @@ class CreateTeamViewModel(
             try {
                 repository.createTeam(teamName)
                 _teamCreated.value = true
-                _error.value = null
+                setError(null)
             } catch (e: Exception) {
                 _teamCreated.value = false
-                _error.value = e.message
+                setError(e.message)
                 println("Error in ViewModel: ${e.message}")
             }
         }
     }
 
     fun submitTeamName(teamName: String) {
-        if (teamName.isBlank()) {
-            _error.value = "Team name cannot be blank"
+        if (!validateNotBlank(teamName, "Team name")) {
             return
         }
 

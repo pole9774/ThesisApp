@@ -1,6 +1,5 @@
 package it.polito.thesisapp.ui.components
 
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -8,11 +7,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.navigation.compose.currentBackStackEntryAsState
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.navigation.Screen
-import it.polito.thesisapp.ui.LocalNavController
 import it.polito.thesisapp.utils.Constants
 import it.polito.thesisapp.viewmodel.CreateTaskViewModel
 import it.polito.thesisapp.viewmodel.CreateTeamViewModel
@@ -22,14 +18,6 @@ fun MainFab(
     currentRoute: String?,
     onFabClick: () -> Unit
 ) {
-    val navController = LocalNavController.current
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    // Get the base route without parameters
-    val baseRoute = navBackStackEntry?.destination?.route?.substringBefore("/{")
-
-    baseRoute == "team" && navBackStackEntry?.arguments?.getString(Constants.FirestoreFields.Team.TEAM_ID) != null
-
     if (Screen.isHomeRoute(currentRoute) ||
         Screen.isTeamRoute(currentRoute) ||
         Screen.isCreateTeamRoute(currentRoute) ||
@@ -77,14 +65,14 @@ fun handleFabClick(
 
         Screen.isTeamRoute(currentRoute) -> {
             val teamId = navigationManager.getArgument(Constants.FirestoreFields.Team.TEAM_ID)
-            Log.d("AAA", "teamId in handleFabClick - 2nd branch: $teamId")
             if (teamId != null) {
                 navigationManager.navigateToCreateTask(teamId)
             }
         }
 
         Screen.isCreateTeamRoute(currentRoute) -> {
-            val teamName = navigationManager.getCurrentArgument<String>(Constants.Tags.TEAM_NAME)
+            val teamName =
+                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_NAME)
             if (!teamName.isNullOrBlank()) {
                 createTeamViewModel.submitTeamName(teamName)
             }
@@ -92,11 +80,12 @@ fun handleFabClick(
 
         Screen.isCreateTaskRoute(currentRoute) -> {
             val teamId = navigationManager.getArgument(Constants.FirestoreFields.Team.TEAM_ID)
-            Log.d("AAA", "teamId in handleFabClick - 4th branch: $teamId")
 
-            val taskName = navigationManager.getCurrentArgument<String>(Constants.Tags.TASK_NAME)
+            val taskName =
+                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_NAME)
             val taskDescription =
-                navigationManager.getCurrentArgument<String>(Constants.Tags.TASK_DESCRIPTION) ?: ""
+                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_DESCRIPTION)
+                    ?: ""
 
             if (!taskName.isNullOrBlank() && teamId != null) {
                 createTaskViewModel.createTask(teamId, taskName, taskDescription)

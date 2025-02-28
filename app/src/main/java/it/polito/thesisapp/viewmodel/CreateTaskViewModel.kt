@@ -1,6 +1,5 @@
 package it.polito.thesisapp.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.polito.thesisapp.repository.TeamRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,20 +8,16 @@ import kotlinx.coroutines.launch
 
 class CreateTaskViewModel(
     private val repository: TeamRepository = TeamRepository()
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _taskCreated = MutableStateFlow(false)
     val taskCreated: StateFlow<Boolean> = _taskCreated
-
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
 
     private val _teamId = MutableStateFlow<String?>(null)
     val teamId: StateFlow<String?> = _teamId
 
     fun createTask(teamId: String, taskName: String, taskDescription: String) {
-        if (taskName.isBlank()) {
-            _error.value = "Task name cannot be blank"
+        if (!validateNotBlank(taskName, "Task name")) {
             return
         }
 
@@ -30,18 +25,17 @@ class CreateTaskViewModel(
             try {
                 repository.createTask(teamId, taskName, taskDescription)
                 _taskCreated.value = true
-                _error.value = null
+                setError(null)
             } catch (e: Exception) {
                 _taskCreated.value = false
-                _error.value = e.message
+                setError(e.message)
                 println("Error in ViewModel: ${e.message}")
             }
         }
     }
 
     fun submitTaskDetails(teamId: String, taskName: String, taskDescription: String) {
-        if (taskName.isBlank()) {
-            _error.value = "Task name cannot be blank"
+        if (!validateNotBlank(taskName, "Task name")) {
             return
         }
 
