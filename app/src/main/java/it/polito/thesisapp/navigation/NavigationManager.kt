@@ -14,17 +14,14 @@ class NavigationManager(private val navController: NavController) {
      * Provides type-safety and encapsulates navigation parameters.
      */
     sealed class NavigationEvent {
-        /*
-        if a navigate does not require any parameters, I use a singleton so that it is more efficient, otherwise I use a data class
-         */
-        object NavigateToHome : NavigationEvent()
-        object NavigateToHomeWithClearBackStack : NavigationEvent()
+        data object NavigateToHome : NavigationEvent()
+        data object NavigateToHomeWithClearBackStack : NavigationEvent()
         data class NavigateToTeam(val teamId: String) : NavigationEvent()
-        object NavigateToCreateTeam : NavigationEvent()
+        data object NavigateToCreateTeam : NavigationEvent()
         data class NavigateToCreateTask(val teamId: String) : NavigationEvent()
-        object NavigateToHomeAfterTeamCreation : NavigationEvent()
+        data object NavigateToHomeAfterTeamCreation : NavigationEvent()
         data class NavigateToTeamAfterTaskCreation(val teamId: String) : NavigationEvent()
-        object NavigateToProfile : NavigationEvent()
+        data object NavigateToProfile : NavigationEvent()
     }
 
     /**
