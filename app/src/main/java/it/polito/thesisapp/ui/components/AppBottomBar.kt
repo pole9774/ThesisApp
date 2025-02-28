@@ -12,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.ui.LocalNavController
+import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 
 /**
  * Composable function that displays the bottom navigation bar.
@@ -31,7 +32,9 @@ fun AppBottomBar(navigationManager: NavigationManager) {
                 icon = { Icon(painterResource(screen.icon), contentDescription = null) },
                 label = { Text(screen.label) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                onClick = { navigationManager.navigateToHome(true) }
+                onClick = {
+                    navigationManager.navigate(NavigationEvent.NavigateToHomeWithClearBackStack)
+                }
             )
         }
     }

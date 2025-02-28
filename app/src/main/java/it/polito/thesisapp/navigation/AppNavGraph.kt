@@ -9,7 +9,7 @@ import it.polito.thesisapp.ui.screens.CreateTeamScreen
 import it.polito.thesisapp.ui.screens.HomeScreen
 import it.polito.thesisapp.ui.screens.TeamScreen
 import it.polito.thesisapp.utils.Constants
-import it.polito.thesisapp.viewmodel.CreateTeamViewModel
+import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 
 fun NavGraphBuilder.homeGraph(
     navigationManager: NavigationManager,
@@ -17,13 +17,17 @@ fun NavGraphBuilder.homeGraph(
     composable(Screen.buildHomeRoute()) {
         HomeScreen(
             userId = Constants.User.USER_ID,
-            onNavigateToTeam = { teamId -> navigationManager.navigateToTeam(teamId) }
+            onNavigateToTeam = { teamId ->
+                navigationManager.navigate(NavigationEvent.NavigateToTeam(teamId))
+            }
         )
     }
     composable(Screen.buildCreateTeamRoute()) {
         CreateTeamScreen(
             navigationManager = navigationManager,
-            afterTeamCreated = { navigationManager.navigateToHomeAfterTeamCreation() }
+            afterTeamCreated = {
+                navigationManager.navigate(NavigationEvent.NavigateToHomeAfterTeamCreation)
+            }
         )
     }
 }
@@ -50,7 +54,13 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
         requireNotNull(teamId) { "teamId parameter wasn't found" }
         CreateTaskScreen(
             teamId = teamId,
-            afterTaskCreated = { navigationManager.navigateToTeamAfterTaskCreation(teamId) }
+            afterTaskCreated = {
+                navigationManager.navigate(
+                    NavigationEvent.NavigateToTeamAfterTaskCreation(
+                        teamId
+                    )
+                )
+            }
         )
     }
 }
