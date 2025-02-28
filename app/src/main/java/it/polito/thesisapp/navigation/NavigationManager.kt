@@ -169,4 +169,11 @@ class NavigationManager(private val navController: NavController) {
     fun navigate(event: NavigationEvent) {
         handleNavigationEvent(event)
     }
+
+    fun navigateToBottomBarDestination(screen: Screen) {
+        when (screen) {
+            Screen.Home -> navigate(NavigationEvent.NavigateToHomeWithClearBackStack)
+            Screen.Profile -> navigate(NavigationEvent.NavigateToProfile)
+        }
+    }
 }

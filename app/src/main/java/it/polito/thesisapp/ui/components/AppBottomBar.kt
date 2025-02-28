@@ -10,7 +10,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import it.polito.thesisapp.navigation.NavigationManager
-import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.ui.LocalNavController
 
@@ -28,12 +27,7 @@ fun AppBottomBar(navigationManager: NavigationManager) {
                 icon = { Icon(painterResource(screen.icon), contentDescription = null) },
                 label = { Text(screen.label) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                onClick = {
-                    when (screen) {
-                        Screen.Home -> navigationManager.navigate(NavigationEvent.NavigateToHomeWithClearBackStack)
-                        Screen.Profile -> navigationManager.navigate(NavigationEvent.NavigateToProfile)
-                    }
-                }
+                onClick = { navigationManager.navigateToBottomBarDestination(screen) }
             )
         }
     }
