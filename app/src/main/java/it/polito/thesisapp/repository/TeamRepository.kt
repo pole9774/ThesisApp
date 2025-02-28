@@ -1,5 +1,6 @@
 package it.polito.thesisapp.repository
 
+import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -251,5 +252,17 @@ class TeamRepository {
             ).await()
 
         return teamRef
+    }
+
+    suspend fun createTask(teamId: String, taskName: String, taskDescription: String) {
+        val teamRef = db.collection(Constants.FirestoreCollections.TEAMS).document(teamId)
+
+        teamRef.collection(Constants.FirestoreCollections.TEAM_TASKS)
+            .add(
+                mapOf(
+                    Constants.FirestoreFields.Task.NAME to taskName,
+                    Constants.FirestoreFields.Task.DESCRIPTION to taskDescription
+                )
+            ).await()
     }
 }

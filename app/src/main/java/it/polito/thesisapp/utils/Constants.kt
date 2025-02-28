@@ -35,6 +35,7 @@ object Constants {
         object Task {
             const val NAME = "name"
             const val DESCRIPTION = "description"
+            const val TASK_ID = "taskId"
         }
 
         /**
@@ -94,5 +95,7 @@ object Constants {
 
     object Tags {
         const val TEAM_NAME = "teamName"
+        const val TASK_NAME = "taskName"
+        const val TASK_DESCRIPTION = "taskDescription"
     }
 }

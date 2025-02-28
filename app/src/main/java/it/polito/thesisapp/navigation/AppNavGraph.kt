@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import it.polito.thesisapp.ui.screens.CreateTaskScreen
 import it.polito.thesisapp.ui.screens.CreateTeamScreen
 import it.polito.thesisapp.ui.screens.HomeScreen
 import it.polito.thesisapp.ui.screens.TeamScreen
@@ -14,13 +15,13 @@ fun NavGraphBuilder.homeGraph(
     navigationManager: NavigationManager,
     createTeamViewModel: CreateTeamViewModel
 ) {
-    composable(Screen.HOME_ROUTE) {
+    composable(Screen.buildHomeRoute()) {
         HomeScreen(
             userId = Constants.User.USER_ID,
             onNavigateToTeam = { teamId -> navigationManager.navigateToTeam(teamId) }
         )
     }
-    composable(Screen.CREATE_TEAM_ROUTE) {
+    composable(Screen.buildCreateTeamRoute()) {
         CreateTeamScreen(
             navigationManager = navigationManager,
             viewModel = createTeamViewModel,
@@ -29,9 +30,9 @@ fun NavGraphBuilder.homeGraph(
     }
 }
 
-fun NavGraphBuilder.teamGraph() {
+fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
     composable(
-        route = Screen.TEAM_ROUTE,
+        route = "team/{${Constants.FirestoreFields.Team.TEAM_ID}}",
         arguments = listOf(
             navArgument(Constants.FirestoreFields.Team.TEAM_ID) { type = NavType.StringType }
         )
@@ -39,5 +40,19 @@ fun NavGraphBuilder.teamGraph() {
         val teamId = backStackEntry.arguments?.getString(Constants.FirestoreFields.Team.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
         TeamScreen(teamId = teamId)
+    }
+
+    composable(
+        route = "create_task/{${Constants.FirestoreFields.Team.TEAM_ID}}",
+        arguments = listOf(navArgument(Constants.FirestoreFields.Team.TEAM_ID) {
+            type = NavType.StringType
+        })
+    ) { backStackEntry ->
+        val teamId = backStackEntry.arguments?.getString(Constants.FirestoreFields.Team.TEAM_ID)
+        requireNotNull(teamId) { "teamId parameter wasn't found" }
+        CreateTaskScreen(
+            teamId = teamId,
+            afterTaskCreated = { navigationManager.navigateToTeamAfterTaskCreation(teamId) }
+        )
     }
 }

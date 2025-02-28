@@ -16,4 +16,7 @@ object AppViewModelProvider {
 
     @Composable
     fun teamViewModel(): TeamViewModel = viewModel()
+
+    @Composable
+    fun createTaskViewModel(): CreateTaskViewModel = viewModel()
 }

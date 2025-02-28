@@ -1,5 +1,6 @@
 package it.polito.thesisapp.navigation
 
+import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 
@@ -17,11 +18,11 @@ class NavigationManager(private val navController: NavController) {
     fun navigateToHome(clearBackStack: Boolean = false) {
         val navOptions = if (clearBackStack) {
             NavOptions.Builder()
-                .setPopUpTo(Screen.HOME_ROUTE, inclusive = true)
+                .setPopUpTo(Screen.buildHomeRoute(), inclusive = true)
                 .build()
         } else null
 
-        navController.navigate(Screen.HOME_ROUTE, navOptions)
+        navController.navigate(Screen.buildHomeRoute(), navOptions)
     }
 
     /**
@@ -30,14 +31,15 @@ class NavigationManager(private val navController: NavController) {
      * @param teamId The ID of the team to display.
      */
     fun navigateToTeam(teamId: String) {
-        navController.navigate(Screen.teamRoute(teamId))
+        Log.d("AAA", "teamId in navigateToTeam: $teamId")
+        navController.navigate(Screen.buildTeamRoute(teamId))
     }
 
     /**
      * Navigate to the create team screen.
      */
     fun navigateToCreateTeam() {
-        navController.navigate(Screen.CREATE_TEAM_ROUTE)
+        navController.navigate(Screen.buildCreateTeamRoute())
     }
 
     /**
@@ -45,6 +47,19 @@ class NavigationManager(private val navController: NavController) {
      */
     fun navigateToHomeAfterTeamCreation() {
         navigateToHome(clearBackStack = true)
+    }
+
+    fun navigateToCreateTask(teamId: String) {
+        Log.d("AAA", "teamId in navigateToCreateTask: $teamId")
+        navController.navigate(Screen.buildCreateTaskRoute(teamId))
+    }
+
+    fun navigateToTeamAfterTaskCreation(teamId: String) {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(Screen.buildTeamRoute(teamId), inclusive = true)
+            .build()
+
+        navController.navigate(Screen.buildTeamRoute(teamId), navOptions)
     }
 
     /**
@@ -68,4 +83,9 @@ class NavigationManager(private val navController: NavController) {
     fun <T> setArgument(key: String, value: T) {
         navController.currentBackStackEntry?.savedStateHandle?.set(key, value)
     }
+
+    fun getCurrentBackStackEntry() = navController.currentBackStackEntry
+
+    fun getArgument(key: String): String? =
+        navController.currentBackStackEntry?.arguments?.getString(key)
 }

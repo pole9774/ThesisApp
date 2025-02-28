@@ -32,6 +32,7 @@ fun MainScreen() {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
     val createTeamViewModel = AppViewModelProvider.createTeamViewModel()
+    val createTaskViewModel = AppViewModelProvider.createTaskViewModel()
 
     CompositionLocalProvider(
         LocalNavController provides navController,
@@ -46,7 +47,8 @@ fun MainScreen() {
                         handleFabClick(
                             navigationManager = navigationManager,
                             currentRoute = currentRoute,
-                            createTeamViewModel = createTeamViewModel
+                            createTeamViewModel = createTeamViewModel,
+                            createTaskViewModel = createTaskViewModel
                         )
                     }
                 )
@@ -54,11 +56,11 @@ fun MainScreen() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = Screen.HOME_ROUTE,
+                startDestination = Screen.buildHomeRoute(),
                 modifier = Modifier.padding(paddingValues)
             ) {
                 homeGraph(navigationManager, createTeamViewModel)
-                teamGraph()
+                teamGraph(navigationManager)
             }
         }
     }
