@@ -19,7 +19,6 @@ import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.AppBottomBar
 import it.polito.thesisapp.ui.components.MainFab
 import it.polito.thesisapp.ui.components.handleFabClick
-import it.polito.thesisapp.viewmodel.AppViewModelProvider
 
 /**
  * Composable function that displays the main screen of the application.
@@ -31,8 +30,6 @@ fun MainScreen() {
     val navigationManager = remember { NavigationManager(navController) }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
-    val createTeamViewModel = AppViewModelProvider.createTeamViewModel()
-    val createTaskViewModel = AppViewModelProvider.createTaskViewModel()
 
     CompositionLocalProvider(
         LocalNavController provides navController,
@@ -47,8 +44,6 @@ fun MainScreen() {
                         handleFabClick(
                             navigationManager = navigationManager,
                             currentRoute = currentRoute,
-                            createTeamViewModel = createTeamViewModel,
-                            createTaskViewModel = createTaskViewModel
                         )
                     }
                 )
@@ -59,7 +54,7 @@ fun MainScreen() {
                 startDestination = Screen.buildHomeRoute(),
                 modifier = Modifier.padding(paddingValues)
             ) {
-                homeGraph(navigationManager, createTeamViewModel)
+                homeGraph(navigationManager)
                 teamGraph(navigationManager)
             }
         }

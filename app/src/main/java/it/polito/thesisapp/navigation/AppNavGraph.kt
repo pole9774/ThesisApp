@@ -13,7 +13,6 @@ import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 
 fun NavGraphBuilder.homeGraph(
     navigationManager: NavigationManager,
-    createTeamViewModel: CreateTeamViewModel
 ) {
     composable(Screen.buildHomeRoute()) {
         HomeScreen(
@@ -24,7 +23,6 @@ fun NavGraphBuilder.homeGraph(
     composable(Screen.buildCreateTeamRoute()) {
         CreateTeamScreen(
             navigationManager = navigationManager,
-            viewModel = createTeamViewModel,
             afterTeamCreated = { navigationManager.navigateToHomeAfterTeamCreation() }
         )
     }

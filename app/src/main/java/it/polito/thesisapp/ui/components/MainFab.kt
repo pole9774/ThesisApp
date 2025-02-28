@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.utils.Constants
+import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.CreateTaskViewModel
 import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 
@@ -54,10 +55,11 @@ private fun getFabDescription(currentRoute: String?): String =
 
 fun handleFabClick(
     navigationManager: NavigationManager,
-    currentRoute: String?,
-    createTeamViewModel: CreateTeamViewModel,
-    createTaskViewModel: CreateTaskViewModel
+    currentRoute: String?
 ) {
+    val currentBackStackEntry = navigationManager.getCurrentBackStackEntry()
+    val viewModelStoreOwner = currentBackStackEntry ?: return
+
     when {
         Screen.isHomeRoute(currentRoute) -> {
             navigationManager.navigateToCreateTeam()
@@ -74,13 +76,16 @@ fun handleFabClick(
             val teamName =
                 navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_NAME)
             if (!teamName.isNullOrBlank()) {
-                createTeamViewModel.submitTeamName(teamName)
+                val viewModel = AppViewModelProvider.getCreateTeamViewModel(
+                    viewModelStoreOwner,
+                    viewModelStoreOwner.defaultViewModelProviderFactory
+                )
+                viewModel.submitTeamName(teamName)
             }
         }
 
         Screen.isCreateTaskRoute(currentRoute) -> {
             val teamId = navigationManager.getArgument(Constants.FirestoreFields.Team.TEAM_ID)
-
             val taskName =
                 navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_NAME)
             val taskDescription =
@@ -88,7 +93,11 @@ fun handleFabClick(
                     ?: ""
 
             if (!taskName.isNullOrBlank() && teamId != null) {
-                createTaskViewModel.createTask(teamId, taskName, taskDescription)
+                val viewModel = AppViewModelProvider.getCreateTaskViewModel(
+                    viewModelStoreOwner,
+                    viewModelStoreOwner.defaultViewModelProviderFactory
+                )
+                viewModel.createTask(teamId, taskName, taskDescription)
                 navigationManager.navigateToTeamAfterTaskCreation(teamId)
             }
         }
