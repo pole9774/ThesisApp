@@ -186,47 +186,11 @@ class TeamRepository {
         }
     }
 
-    /**
-     * Fetches assigned members for a specific task.
-     * Updates task with assigned members and emits updated team.
-     * @param taskRef Reference to task document
-     * @param task Current task object
-     * @param tasks Mutable list of all tasks
-     * @param team Current team object
-     * @param members List of team members
-     */
-    private fun ProducerScope<Team?>.fetchAssignedMembers(
-        taskRef: DocumentReference,
-        task: Task,
-        tasks: MutableList<Task>,
-        team: Team,
-        members: List<TeamMember>
-    ) {
-        taskRef.collection(Constants.FirestoreCollections.TASK_ASSIGNED_MEMBERS)
-            .addSnapshotListener { assignedMembersSnapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
-
-                val assignedMembers = assignedMembersSnapshot?.documents
-                    ?.mapNotNull { it.get(Constants.FirestoreFields.AssignedMember.MEMBER_REF) as? DocumentReference }
-                    ?: emptyList()
-
-                val updatedTask = task.copy(assignedMembers = assignedMembers)
-                val taskIndex = tasks.indexOfFirst { it.id == task.id }
-
-                if (taskIndex != -1) {
-                    tasks[taskIndex] = updatedTask
-                } else {
-                    tasks.add(updatedTask)
-                }
-
-                trySend(team.copy(members = members, tasks = tasks))
-            }
-    }
-
-    suspend fun createTeam(teamName: String, teamDescription: String = ""): DocumentReference {
+    suspend fun createTeam(
+        teamName: String,
+        teamDescription: String = "",
+        memberIds: Set<String> = setOf(Constants.User.USER_ID)
+    ): DocumentReference {
         val teamRef = db.collection(Constants.FirestoreCollections.TEAMS)
             .add(
                 mapOf(
@@ -235,6 +199,7 @@ class TeamRepository {
                 )
             ).await()
 
+        // Add the current user as admin
         teamRef.collection(Constants.FirestoreCollections.TEAM_MEMBERS)
             .add(
                 mapOf(
@@ -245,12 +210,28 @@ class TeamRepository {
                 )
             ).await()
 
-        db.collection(Constants.FirestoreCollections.PROFILES)
-            .document(Constants.User.USER_ID)
-            .update(
-                Constants.FirestoreFields.Profile.TEAMS,
-                FieldValue.arrayUnion(teamRef)
-            ).await()
+        // Add other selected members
+        memberIds.filter { it != Constants.User.USER_ID }.forEach { memberId ->
+            teamRef.collection(Constants.FirestoreCollections.TEAM_MEMBERS)
+                .add(
+                    mapOf(
+                        Constants.FirestoreFields.TeamMember.ROLE to Constants.FirestoreValues.TeamMemberRole.MEMBER,
+                        Constants.FirestoreFields.TeamMember.PROFILE_REF to db.collection(
+                            Constants.FirestoreCollections.PROFILES
+                        ).document(memberId)
+                    )
+                ).await()
+        }
+
+        // Update all selected profiles with the team reference
+        memberIds.forEach { memberId ->
+            db.collection(Constants.FirestoreCollections.PROFILES)
+                .document(memberId)
+                .update(
+                    Constants.FirestoreFields.Profile.TEAMS,
+                    FieldValue.arrayUnion(teamRef)
+                ).await()
+        }
 
         return teamRef
     }

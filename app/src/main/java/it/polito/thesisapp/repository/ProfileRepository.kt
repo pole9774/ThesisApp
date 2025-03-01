@@ -38,4 +38,24 @@ class ProfileRepository {
             }
         awaitClose { subscription.remove() }
     }
+
+    fun getAllProfilesFlow(): Flow<List<Profile>> = callbackFlow {
+        val subscription = profilesCollection
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val profiles = snapshot.documents.mapNotNull {
+                        it.toObject(Profile::class.java)?.copy(id = it.id)
+                    }
+                    trySend(profiles)
+                } else {
+                    trySend(emptyList())
+                }
+            }
+        awaitClose { subscription.remove() }
+    }
 }
