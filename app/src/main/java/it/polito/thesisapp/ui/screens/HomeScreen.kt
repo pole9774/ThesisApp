@@ -60,6 +60,10 @@ fun HomeScreen(
         viewModel.loadProfile(userId)
     }
 
+    LaunchedEffect(pagerState.currentPage) {
+        viewModel.selectTeam(pagerState.currentPage)
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         if (isLoading) {
             LoadingIndicator()

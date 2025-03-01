@@ -32,6 +32,7 @@ object Constants {
         object Team {
             const val TEAM_ID = "teamId"
             const val NAME = "name"
+            const val DESCRIPTION = "description"
             const val MEMBERS = "members"
             const val TASKS = "tasks"
         }
@@ -100,6 +101,7 @@ object Constants {
         // Tags for saved state
         object Tags {
             const val TEAM_NAME = "teamName"
+            const val TEAM_DESCRIPTION = "teamDescription"
             const val TASK_NAME = "taskName"
             const val TASK_DESCRIPTION = "taskDescription"
         }

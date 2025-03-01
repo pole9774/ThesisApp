@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.ui.LocalNavigationManager
@@ -32,10 +34,12 @@ fun CreateTeamScreen(
     afterTeamCreated: () -> Unit = {},
 ) {
     var teamName by remember { mutableStateOf("") }
+    var teamDescription by remember { mutableStateOf("") }
     val error by viewModel.error.collectAsState()
-
-    LaunchedEffect(teamName) {
+    
+    LaunchedEffect(teamName, teamDescription) {
         navigationManager.setArgument(Constants.Navigation.Tags.TEAM_NAME, teamName)
+        navigationManager.setArgument(Constants.Navigation.Tags.TEAM_DESCRIPTION, teamDescription)
     }
 
     Box(
@@ -58,7 +62,23 @@ fun CreateTeamScreen(
                 onValueChange = { teamName = it },
                 label = { Text("Team Name") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    autoCorrectEnabled = false,
+                )
+            )
+            OutlinedTextField(
+                value = teamDescription,
+                onValueChange = { teamDescription = it },
+                label = { Text("Team Description") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                maxLines = 5,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    autoCorrectEnabled = true
+                )
             )
             error?.let {
                 Text(

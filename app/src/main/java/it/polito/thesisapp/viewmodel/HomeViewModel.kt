@@ -34,10 +34,13 @@ class HomeViewModel(
     private val _sortedTasks = MutableStateFlow<List<Task>>(emptyList())
     val sortedTasks = _sortedTasks
 
+    private val _selectedTeamIndex = MutableStateFlow(0)
+    val selectedTeamIndex = _selectedTeamIndex
+
     init {
         viewModelScope.launch {
-            combine(_teams, taskSortMode) { teams, sortMode ->
-                val currentTeam = teams.firstOrNull()
+            combine(_teams, _taskSortMode, _selectedTeamIndex) { teams, sortMode, selectedIndex ->
+                val currentTeam = teams.getOrNull(selectedIndex)
                 sortTasks(currentTeam?.tasks ?: emptyList(), sortMode)
             }.collect { sortedList ->
                 _sortedTasks.value = sortedList
@@ -104,6 +107,12 @@ class HomeViewModel(
                 setError(e.message)
                 _isLoading.value = false
             }
+        }
+    }
+
+    fun selectTeam(index: Int) {
+        if (index >= 0 && index < _teams.value.size) {
+            _selectedTeamIndex.value = index
         }
     }
 }

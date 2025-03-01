@@ -226,11 +226,12 @@ class TeamRepository {
             }
     }
 
-    suspend fun createTeam(teamName: String): DocumentReference {
+    suspend fun createTeam(teamName: String, teamDescription: String = ""): DocumentReference {
         val teamRef = db.collection(Constants.FirestoreCollections.TEAMS)
             .add(
                 mapOf(
-                    Constants.FirestoreFields.Team.NAME to teamName
+                    Constants.FirestoreFields.Team.NAME to teamName,
+                    Constants.FirestoreFields.Team.DESCRIPTION to teamDescription
                 )
             ).await()
 

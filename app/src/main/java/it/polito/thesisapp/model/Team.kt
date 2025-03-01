@@ -7,12 +7,14 @@ import it.polito.thesisapp.utils.Constants
  *
  * @property id The unique identifier of the team.
  * @property name The name of the team.
+ * @property description A brief description of the team.
  * @property members A list of TeamMember objects representing the members of the team.
  * @property tasks A list of Task objects representing the tasks assigned to the team.
  */
 data class Team(
     val id: String = "",
     val name: String = "",
+    val description: String = "",
     val members: List<TeamMember> = emptyList(),
     val tasks: List<Task> = emptyList()
 ) {
@@ -28,6 +30,7 @@ data class Team(
             return Team(
                 id = id,
                 name = data[Constants.FirestoreFields.Team.NAME] as? String ?: "",
+                description = data[Constants.FirestoreFields.Team.DESCRIPTION] as? String ?: "",
                 members = emptyList(),
                 tasks = emptyList()
             )

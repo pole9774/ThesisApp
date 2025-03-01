@@ -13,14 +13,10 @@ class CreateTeamViewModel(
     private val _teamCreated = MutableStateFlow(false)
     val teamCreated: StateFlow<Boolean> = _teamCreated
 
-    private fun createTeam(teamName: String) {
-        if (!validateNotBlank(teamName, "Team name")) {
-            return
-        }
-
+    private fun createTeam(teamName: String, teamDescription: String) {
         viewModelScope.launch {
             try {
-                repository.createTeam(teamName)
+                repository.createTeam(teamName, teamDescription)
                 _teamCreated.value = true
                 setError(null)
             } catch (e: Exception) {
@@ -31,11 +27,11 @@ class CreateTeamViewModel(
         }
     }
 
-    fun submitTeamName(teamName: String) {
+    fun submitTeam(teamName: String, teamDescription: String) {
         if (!validateNotBlank(teamName, "Team name")) {
             return
         }
 
-        createTeam(teamName)
+        createTeam(teamName, teamDescription)
     }
 }

@@ -1,7 +1,10 @@
 package it.polito.thesisapp.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,10 +40,26 @@ fun TeamScreen(
         if (isLoading) {
             LoadingIndicator()
         } else {
-            Text(
-                text = team?.name ?: "Team not found",
-                style = MaterialTheme.typography.headlineMedium
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = team?.name ?: "Team not found",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+
+                team?.description?.let {
+                    if (it.isNotBlank()) {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
     }
 }

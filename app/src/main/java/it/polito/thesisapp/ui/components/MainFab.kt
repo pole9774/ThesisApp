@@ -75,13 +75,16 @@ fun handleFabClick(
         Screen.isCreateTeamRoute(currentRoute) -> {
             val teamName =
                 navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_NAME)
+            val teamDescription =
+                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_DESCRIPTION)
+                    ?: ""
             if (!teamName.isNullOrBlank()) {
                 val viewModel = AppViewModelProvider.getCreateTeamViewModel(
                     navigationManager.getCurrentBackStackEntry() ?: return,
                     navigationManager.getCurrentBackStackEntry()?.defaultViewModelProviderFactory
                         ?: return
                 )
-                viewModel.submitTeamName(teamName)
+                viewModel.submitTeam(teamName, teamDescription)
             }
         }
 
