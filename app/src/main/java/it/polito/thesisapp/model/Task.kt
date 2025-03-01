@@ -1,5 +1,6 @@
 package it.polito.thesisapp.model
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import it.polito.thesisapp.utils.Constants
 
@@ -15,6 +16,7 @@ data class Task(
     val id: String = "",
     val name: String = "",
     val description: String = "",
+    val creationDate: Timestamp = Timestamp.now(),
     val assignedMembers: List<DocumentReference> = emptyList()
 ) {
     companion object {
@@ -29,8 +31,9 @@ data class Task(
             return Task(
                 id = id,
                 name = data[Constants.FirestoreFields.Task.NAME] as? String ?: "",
-                description = data[Constants.FirestoreFields.Task.DESCRIPTION] as? String
-                    ?: "",
+                description = data[Constants.FirestoreFields.Task.DESCRIPTION] as? String ?: "",
+                creationDate = data[Constants.FirestoreFields.Task.CREATION_DATE] as? Timestamp
+                    ?: Timestamp.now(),
                 assignedMembers = emptyList()
             )
         }

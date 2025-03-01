@@ -3,11 +3,13 @@ package it.polito.thesisapp.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentReference
 import it.polito.thesisapp.model.Profile
+import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.Team
 import it.polito.thesisapp.repository.ProfileRepository
 import it.polito.thesisapp.repository.TeamRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -23,6 +25,41 @@ class HomeViewModel(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading
+
+    enum class TaskSortMode { DATE_DESC, NAME_ASC, NAME_DESC }
+
+    private val _taskSortMode = MutableStateFlow(TaskSortMode.DATE_DESC)
+    val taskSortMode = _taskSortMode
+
+    private val _sortedTasks = MutableStateFlow<List<Task>>(emptyList())
+    val sortedTasks = _sortedTasks
+
+    init {
+        viewModelScope.launch {
+            combine(_teams, taskSortMode) { teams, sortMode ->
+                val currentTeam = teams.firstOrNull()
+                sortTasks(currentTeam?.tasks ?: emptyList(), sortMode)
+            }.collect { sortedList ->
+                _sortedTasks.value = sortedList
+            }
+        }
+    }
+
+    private fun sortTasks(tasks: List<Task>, mode: TaskSortMode): List<Task> {
+        return when (mode) {
+            TaskSortMode.DATE_DESC -> tasks.sortedByDescending { it.creationDate }
+            TaskSortMode.NAME_ASC -> tasks.sortedBy { it.name }
+            TaskSortMode.NAME_DESC -> tasks.sortedByDescending { it.name }
+        }
+    }
+
+    fun toggleSortMode() {
+        _taskSortMode.value = when (_taskSortMode.value) {
+            TaskSortMode.DATE_DESC -> TaskSortMode.NAME_ASC
+            TaskSortMode.NAME_ASC -> TaskSortMode.NAME_DESC
+            TaskSortMode.NAME_DESC -> TaskSortMode.DATE_DESC
+        }
+    }
 
     fun loadProfile(userId: String) {
         viewModelScope.launch {

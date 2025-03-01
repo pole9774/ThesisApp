@@ -50,6 +50,7 @@ object Constants {
         object Task {
             const val NAME = "name"
             const val DESCRIPTION = "description"
+            const val CREATION_DATE = "creationDate"
             const val ASSIGNED_MEMBERS = "assignedMembers"
         }
 

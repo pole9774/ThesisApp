@@ -1,20 +1,26 @@
 package it.polito.thesisapp.ui.screens
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import it.polito.thesisapp.R
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.Team
@@ -46,7 +54,7 @@ fun HomeScreen(
     val teams by viewModel.teams.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val pagerState = rememberPagerState { teams.size }
-    val currentTeam = teams.getOrNull(pagerState.currentPage)
+    teams.getOrNull(pagerState.currentPage)
 
     LaunchedEffect(userId) {
         viewModel.loadProfile(userId)
@@ -69,27 +77,54 @@ fun HomeScreen(
                     onTeamClick = onNavigateToTeam
                 )
                 HorizontalDivider()
-                TasksSection(currentTeam?.tasks ?: emptyList())
+                TasksSection(
+                    viewModel = viewModel
+                )
             }
         }
     }
 }
 
-/**
- * Composable function that displays the tasks section.
- *
- * @param tasks The list of tasks to display.
- */
+
 @Composable
-private fun TasksSection(tasks: List<Task>) {
+private fun TasksSection(
+    viewModel: HomeViewModel
+) {
+    val sortMode by viewModel.taskSortMode.collectAsState()
+    val sortedTasks by viewModel.sortedTasks.collectAsState()
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(sortMode) {
+        lazyListState.animateScrollToItem(0)
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = "Tasks",
-            style = MaterialTheme.typography.titleLarge
-        )
-        if (tasks.isEmpty()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Tasks",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            IconButton(onClick = { viewModel.toggleSortMode() }) {
+                Icon(
+                    painter = when (sortMode) {
+                        HomeViewModel.TaskSortMode.DATE_DESC -> painterResource(R.drawable.sort_24)
+                        HomeViewModel.TaskSortMode.NAME_ASC -> painterResource(R.drawable.arrow_upward_24)
+                        HomeViewModel.TaskSortMode.NAME_DESC -> painterResource(R.drawable.arrow_downward_24)
+                    },
+                    contentDescription = "Sort tasks",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        if (sortedTasks.isEmpty()) {
             Text(
                 text = "No tasks yet",
                 style = MaterialTheme.typography.bodyMedium,
@@ -97,10 +132,22 @@ private fun TasksSection(tasks: List<Task>) {
             )
         } else {
             LazyColumn(
+                state = lazyListState,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(tasks) { task ->
-                    TaskCard(task)
+                items(
+                    items = sortedTasks,
+                    key = { task -> task.id }
+                ) { task ->
+                    TaskCard(
+                        task = task,
+                        modifier = Modifier.animateItem(
+                            fadeInSpec = null, fadeOutSpec = null, placementSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+                    )
                 }
             }
         }
@@ -113,9 +160,13 @@ private fun TasksSection(tasks: List<Task>) {
  * @param task The task to display.
  */
 @Composable
-private fun TaskCard(task: Task) {
+private fun TaskCard(
+    task: Task,
+    modifier: Modifier = Modifier
+) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
     ) {
         Column(
             modifier = Modifier

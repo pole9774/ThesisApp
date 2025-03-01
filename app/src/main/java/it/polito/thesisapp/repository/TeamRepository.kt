@@ -1,5 +1,6 @@
 package it.polito.thesisapp.repository
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -260,7 +261,8 @@ class TeamRepository {
             .add(
                 mapOf(
                     Constants.FirestoreFields.Task.NAME to taskName,
-                    Constants.FirestoreFields.Task.DESCRIPTION to taskDescription
+                    Constants.FirestoreFields.Task.DESCRIPTION to taskDescription,
+                    Constants.FirestoreFields.Task.CREATION_DATE to Timestamp.now()
                 )
             ).await()
     }
