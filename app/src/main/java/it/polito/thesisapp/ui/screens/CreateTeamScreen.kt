@@ -173,8 +173,7 @@ private fun ProfileCheckboxItem(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
@@ -196,11 +195,12 @@ private fun ProfileCheckboxItem(
             UserMonogram(
                 firstName = profile.firstName,
                 lastName = profile.lastName,
-                size = 36
+                size = 40
             )
 
             Column(
-                modifier = Modifier.padding(start = 12.dp)
+                modifier = Modifier.padding(start = 12.dp),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "${profile.firstName} ${profile.lastName}",

@@ -35,10 +35,16 @@ fun UserMonogram(
             ),
         contentAlignment = Alignment.Center
     ) {
+        val textStyle = when {
+            size <= 40 -> MaterialTheme.typography.bodyLarge
+            size <= 60 -> MaterialTheme.typography.titleMedium
+            else -> MaterialTheme.typography.headlineMedium
+        }
+
         Text(
             text = buildInitials(firstName, lastName),
             color = MaterialTheme.colorScheme.onPrimary,
-            style = MaterialTheme.typography.headlineMedium
+            style = textStyle
         )
     }
 }
