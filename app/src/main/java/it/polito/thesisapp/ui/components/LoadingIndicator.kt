@@ -10,6 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * Composable function that displays a loading indicator.
+ *
+ * @param modifier Modifier to be applied to the Box layout.
+ * @param size Size of the CircularProgressIndicator in dp.
+ */
 @Composable
 fun LoadingIndicator(
     modifier: Modifier = Modifier,

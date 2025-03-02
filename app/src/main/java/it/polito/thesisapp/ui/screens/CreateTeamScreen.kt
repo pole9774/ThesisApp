@@ -35,6 +35,13 @@ import it.polito.thesisapp.utils.Constants
 import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 
+/**
+ * Composable function that displays the screen for creating a new team.
+ *
+ * @param navigationManager The navigation manager to handle navigation actions.
+ * @param viewModel The ViewModel for creating teams.
+ * @param afterTeamCreated Callback to be invoked after the team is created.
+ */
 @Composable
 fun CreateTeamScreen(
     navigationManager: NavigationManager = LocalNavigationManager.current,
@@ -149,8 +156,16 @@ fun CreateTeamScreen(
     }
 }
 
+/**
+ * Composable function that displays a profile item with a checkbox.
+ *
+ * @param profile The profile data to display.
+ * @param isSelected Whether the profile is selected.
+ * @param isCurrentUser Whether the profile belongs to the current user.
+ * @param onSelectionChanged Callback to be invoked when the selection state changes.
+ */
 @Composable
-fun ProfileCheckboxItem(
+private fun ProfileCheckboxItem(
     profile: Profile,
     isSelected: Boolean,
     isCurrentUser: Boolean,

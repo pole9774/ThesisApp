@@ -25,6 +25,12 @@ import it.polito.thesisapp.viewmodel.ProfileViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/**
+ * Composable function that displays the profile screen.
+ *
+ * @param userId The unique identifier of the user.
+ * @param viewModel The ViewModel that manages the state of the profile screen. Defaults to an instance provided by AppViewModelProvider.
+ */
 @Composable
 fun ProfileScreen(
     userId: String,
@@ -67,6 +73,11 @@ fun ProfileScreen(
     }
 }
 
+/**
+ * Composable function that displays the profile information section.
+ *
+ * @param profile The profile data to display.
+ */
 @Composable
 private fun ProfileInfoSection(profile: Profile) {
 
@@ -92,6 +103,12 @@ private fun ProfileInfoSection(profile: Profile) {
     }
 }
 
+/**
+ * Composable function that displays a profile information item.
+ *
+ * @param label The label of the information item.
+ * @param value The value of the information item.
+ */
 @Composable
 private fun ProfileInfoItem(label: String, value: String) {
     Column {

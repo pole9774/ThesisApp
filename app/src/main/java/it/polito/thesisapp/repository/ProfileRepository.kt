@@ -39,6 +39,11 @@ class ProfileRepository {
         awaitClose { subscription.remove() }
     }
 
+    /**
+     * Retrieves a flow of all Profile objects.
+     *
+     * @return A Flow emitting a list of Profile objects.
+     */
     fun getAllProfilesFlow(): Flow<List<Profile>> = callbackFlow {
         val subscription = profilesCollection
             .addSnapshotListener { snapshot, error ->

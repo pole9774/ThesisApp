@@ -4,23 +4,62 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 
 /**
- * Central class for handling all navigation-related actions across the app.
- * Provides type-safe navigation methods and encapsulates navigation logic.
+ * Manager class responsible for handling navigation operations throughout the app.
+ * It abstracts the NavController and provides high-level navigation methods.
+ *
+ * @property navController The NavController instance used for navigation
  */
 class NavigationManager(private val navController: NavController) {
 
     /**
-     * Sealed class representing different navigation events in the application.
-     * Provides type-safety and encapsulates navigation parameters.
+     * Sealed class representing navigation events in the application.
+     * Each event corresponds to a specific navigation action.
      */
     sealed class NavigationEvent {
+        /**
+         * Navigation event to navigate to the home screen.
+         */
         data object NavigateToHome : NavigationEvent()
+
+        /**
+         * Navigation event to navigate to the home screen and clear the back stack.
+         */
         data object NavigateToHomeWithClearBackStack : NavigationEvent()
+
+        /**
+         * Navigation event to navigate to a specific team screen.
+         *
+         * @property teamId The ID of the team to navigate to.
+         */
         data class NavigateToTeam(val teamId: String) : NavigationEvent()
+
+        /**
+         * Navigation event to navigate to the create team screen.
+         */
         data object NavigateToCreateTeam : NavigationEvent()
+
+        /**
+         * Navigation event to navigate to the create task screen for a specific team.
+         *
+         * @property teamId The ID of the team to create a task for.
+         */
         data class NavigateToCreateTask(val teamId: String) : NavigationEvent()
+
+        /**
+         * Navigation event to navigate to the home screen after team creation.
+         */
         data object NavigateToHomeAfterTeamCreation : NavigationEvent()
+
+        /**
+         * Navigation event to navigate to a specific team screen after task creation.
+         *
+         * @property teamId The ID of the team to navigate to.
+         */
         data class NavigateToTeamAfterTaskCreation(val teamId: String) : NavigationEvent()
+
+        /**
+         * Navigation event to navigate to the profile screen.
+         */
         data object NavigateToProfile : NavigationEvent()
     }
 
@@ -106,6 +145,9 @@ class NavigationManager(private val navController: NavController) {
         navController.navigate(Screen.buildTeamRoute(teamId), navOptions)
     }
 
+    /**
+     * Navigate to profile screen.
+     */
     private fun navigateToProfile() {
         navController.navigate(Screen.buildProfileRoute())
     }
@@ -167,6 +209,11 @@ class NavigationManager(private val navController: NavController) {
         handleNavigationEvent(event)
     }
 
+    /**
+     * Navigates to a destination in the bottom navigation bar.
+     *
+     * @param screen The screen destination to navigate to.
+     */
     fun navigateToBottomBarDestination(screen: Screen) {
         when (screen) {
             Screen.Home -> navigate(NavigationEvent.NavigateToHomeWithClearBackStack)

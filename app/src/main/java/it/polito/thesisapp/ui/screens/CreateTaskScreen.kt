@@ -25,9 +25,16 @@ import it.polito.thesisapp.utils.Constants
 import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.CreateTaskViewModel
 
+/**
+ * Composable function that displays the screen for creating a new task.
+ *
+ * @param teamId The ID of the team for which the task is being created.
+ * @param navigationManager The navigation manager to handle navigation actions.
+ * @param viewModel The ViewModel for creating tasks.
+ * @param afterTaskCreated Callback to be invoked after the task is created.
+ */
 @Composable
 fun CreateTaskScreen(
-    teamId: String,
     navigationManager: NavigationManager = LocalNavigationManager.current,
     viewModel: CreateTaskViewModel = AppViewModelProvider.createTaskViewModel(),
     afterTaskCreated: () -> Unit = {},

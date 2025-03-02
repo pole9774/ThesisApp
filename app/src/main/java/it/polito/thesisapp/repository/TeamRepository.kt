@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Repository class for managing team data.
+ */
 class TeamRepository {
     private val db = FirebaseFirestore.getInstance()
 
@@ -186,6 +189,15 @@ class TeamRepository {
         }
     }
 
+    /**
+     * Creates a new team in Firestore with the given name, description, and members.
+     * Adds the current user as an admin and updates profiles with the team reference.
+     *
+     * @param teamName Name of the team
+     * @param teamDescription Description of the team
+     * @param memberIds Set of user IDs to be added to the team
+     * @return DocumentReference of the created team
+     */
     suspend fun createTeam(
         teamName: String,
         teamDescription: String = "",
@@ -236,6 +248,13 @@ class TeamRepository {
         return teamRef
     }
 
+    /**
+     * Creates a new task in Firestore for the specified team.
+     *
+     * @param teamId ID of the team
+     * @param taskName Name of the task
+     * @param taskDescription Description of the task
+     */
     suspend fun createTask(teamId: String, taskName: String, taskDescription: String) {
         val teamRef = db.collection(Constants.FirestoreCollections.TEAMS).document(teamId)
 

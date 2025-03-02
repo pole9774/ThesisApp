@@ -13,6 +13,12 @@ import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.utils.Constants
 import it.polito.thesisapp.viewmodel.AppViewModelProvider
 
+/**
+ * Composable function that displays the main FloatingActionButton (FAB).
+ *
+ * @param currentRoute The current route in the navigation.
+ * @param onFabClick The callback to be invoked when the FAB is clicked.
+ */
 @Composable
 fun MainFab(
     currentRoute: String?,
@@ -42,6 +48,12 @@ fun MainFab(
     }
 }
 
+/**
+ * Returns the content description for the FAB based on the current route.
+ *
+ * @param currentRoute The current route in the navigation.
+ * @return The content description for the FAB.
+ */
 private fun getFabDescription(currentRoute: String?): String =
     when {
         Screen.isHomeRoute(currentRoute) -> "Create Team"
@@ -51,7 +63,12 @@ private fun getFabDescription(currentRoute: String?): String =
         else -> "Add"
     }
 
-
+/**
+ * Handles the click event for the FAB based on the current route.
+ *
+ * @param navigationManager The navigation manager to handle navigation actions.
+ * @param currentRoute The current route in the navigation.
+ */
 fun handleFabClick(
     navigationManager: NavigationManager,
     currentRoute: String?

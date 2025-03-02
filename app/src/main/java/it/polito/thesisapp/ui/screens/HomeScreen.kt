@@ -41,8 +41,11 @@ import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.HomeViewModel
 
 /**
+ * Composable function that displays the home screen.
+ *
  * @param userId The unique identifier of the user.
  * @param viewModel The ViewModel that manages the state of the home screen. Defaults to an instance provided by viewModel().
+ * @param onNavigateToTeam Callback to be invoked when navigating to a team.
  */
 @Composable
 fun HomeScreen(
@@ -89,7 +92,11 @@ fun HomeScreen(
     }
 }
 
-
+/**
+ * Composable function that displays the tasks section.
+ *
+ * @param viewModel The ViewModel that manages the state of the tasks section.
+ */
 @Composable
 private fun TasksSection(
     viewModel: HomeViewModel
@@ -162,6 +169,7 @@ private fun TasksSection(
  * Composable function that displays a card for a task.
  *
  * @param task The task to display.
+ * @param modifier The modifier to be applied to the card.
  */
 @Composable
 private fun TaskCard(
@@ -199,6 +207,7 @@ private fun TaskCard(
  *
  * @param teams The list of teams to display.
  * @param pagerState The state of the pager used to display the teams.
+ * @param onTeamClick Callback to be invoked when a team is clicked.
  */
 @Composable
 private fun TeamSection(
@@ -237,6 +246,7 @@ private fun TeamSection(
  *
  * @param team The team to display.
  * @param modifier The modifier to be applied to the card.
+ * @param onTeamClick Callback to be invoked when the card is clicked.
  */
 @Composable
 private fun TeamCard(

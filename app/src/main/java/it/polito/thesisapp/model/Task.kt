@@ -5,12 +5,16 @@ import com.google.firebase.firestore.DocumentReference
 import it.polito.thesisapp.utils.Constants
 
 /**
- * Data class representing a task.
+ * Data class representing a task within a team.
  *
- * @property id The unique identifier of the task.
- * @property name The name of the task.
- * @property description A brief description of the task.
- * @property assignedMembers A list of DocumentReferences to the members assigned to the task.
+ * This class models a work item that can be assigned to team members.
+ * It is stored as a document in the "tasks" subcollection of a team document.
+ *
+ * @property id Unique identifier for this task
+ * @property name Display name of the task
+ * @property description Detailed description of what the task involves
+ * @property creationDate Timestamp when the task was created
+ * @property assignedMembers List of references to profile documents of members assigned to this task
  */
 data class Task(
     val id: String = "",
@@ -21,11 +25,11 @@ data class Task(
 ) {
     companion object {
         /**
-         * Creates a Task object from Firestore data.
+         * Creates a Task object from Firestore document data.
          *
-         * @param id The unique identifier of the task.
-         * @param data A map containing the task data from Firestore.
-         * @return A Task object populated with the provided data.
+         * @param id The document ID from Firestore
+         * @param data The document data map from Firestore
+         * @return A new Task instance populated with the Firestore data
          */
         fun fromFirestore(id: String, data: Map<String, Any>): Task {
             return Task(

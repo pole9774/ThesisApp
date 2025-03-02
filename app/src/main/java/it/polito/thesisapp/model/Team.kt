@@ -3,13 +3,16 @@ package it.polito.thesisapp.model
 import it.polito.thesisapp.utils.Constants
 
 /**
- * Data class representing a team.
+ * Data class representing a team in the application.
  *
- * @property id The unique identifier of the team.
- * @property name The name of the team.
- * @property description A brief description of the team.
- * @property members A list of TeamMember objects representing the members of the team.
- * @property tasks A list of Task objects representing the tasks assigned to the team.
+ * This class models a group that can contain multiple members and tasks.
+ * It is synchronized with a corresponding document in the Firestore "teams" collection.
+ *
+ * @property id Unique identifier for this team
+ * @property name Display name of the team
+ * @property description Longer text describing the team's purpose
+ * @property members List of TeamMember objects representing the users in this team
+ * @property tasks List of Task objects assigned to this team
  */
 data class Team(
     val id: String = "",
@@ -20,11 +23,11 @@ data class Team(
 ) {
     companion object {
         /**
-         * Creates a Team object from Firestore data.
+         * Creates a Team object from Firestore document data.
          *
-         * @param id The unique identifier of the team.
-         * @param data A map containing the team data from Firestore.
-         * @return A Team object populated with the provided data.
+         * @param id The document ID from Firestore
+         * @param data The document data map from Firestore
+         * @return A new Team instance populated with the Firestore data
          */
         fun fromFirestore(id: String, data: Map<String, Any>): Team {
             return Team(

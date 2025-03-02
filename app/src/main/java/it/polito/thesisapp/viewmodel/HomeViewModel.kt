@@ -12,31 +12,61 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Home screen.
+ *
+ * @property profileRepository Repository for profile-related operations.
+ * @property teamRepository Repository for team-related operations.
+ */
 class HomeViewModel(
     private val profileRepository: ProfileRepository = ProfileRepository(),
     private val teamRepository: TeamRepository = TeamRepository()
 ) : BaseViewModel() {
 
+    /**
+     * StateFlow to hold the current profile.
+     */
     private val _profile = MutableStateFlow<Profile?>(null)
     val profile: StateFlow<Profile?> = _profile
 
+    /**
+     * StateFlow to hold the list of teams.
+     */
     private val _teams = MutableStateFlow<List<Team>>(emptyList())
     val teams: StateFlow<List<Team>> = _teams
 
+    /**
+     * StateFlow to indicate if a loading operation is in progress.
+     */
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading
 
+    /**
+     * Enum class to define task sorting modes.
+     */
     enum class TaskSortMode { DATE_DESC, NAME_ASC, NAME_DESC }
 
+    /**
+     * StateFlow to hold the current task sorting mode.
+     */
     private val _taskSortMode = MutableStateFlow(TaskSortMode.DATE_DESC)
     val taskSortMode = _taskSortMode
 
+    /**
+     * StateFlow to hold the sorted list of tasks.
+     */
     private val _sortedTasks = MutableStateFlow<List<Task>>(emptyList())
     val sortedTasks = _sortedTasks
 
+    /**
+     * StateFlow to hold the index of the selected team.
+     */
     private val _selectedTeamIndex = MutableStateFlow(0)
     val selectedTeamIndex = _selectedTeamIndex
 
+    /**
+     * Initializes the ViewModel and sets up task sorting.
+     */
     init {
         viewModelScope.launch {
             combine(_teams, _taskSortMode, _selectedTeamIndex) { teams, sortMode, selectedIndex ->
@@ -48,6 +78,13 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Sorts tasks based on the specified sorting mode.
+     *
+     * @param tasks The list of tasks to sort.
+     * @param mode The sorting mode to use.
+     * @return The sorted list of tasks.
+     */
     private fun sortTasks(tasks: List<Task>, mode: TaskSortMode): List<Task> {
         return when (mode) {
             TaskSortMode.DATE_DESC -> tasks.sortedByDescending { it.creationDate }
@@ -56,6 +93,9 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Toggles the task sorting mode.
+     */
     fun toggleSortMode() {
         _taskSortMode.value = when (_taskSortMode.value) {
             TaskSortMode.DATE_DESC -> TaskSortMode.NAME_ASC
@@ -64,6 +104,11 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Loads the profile for the specified user ID.
+     *
+     * @param userId The ID of the user whose profile is to be loaded.
+     */
     fun loadProfile(userId: String) {
         viewModelScope.launch {
             try {
@@ -79,6 +124,11 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Loads the teams for the specified list of team references.
+     *
+     * @param teamRefs The list of team document references.
+     */
     private fun loadTeams(teamRefs: List<DocumentReference>) {
         viewModelScope.launch {
             try {
@@ -110,6 +160,11 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * Selects a team by its index.
+     *
+     * @param index The index of the team to select.
+     */
     fun selectTeam(index: Int) {
         if (index >= 0 && index < _teams.value.size) {
             _selectedTeamIndex.value = index

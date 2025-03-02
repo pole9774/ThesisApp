@@ -19,6 +19,12 @@ import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.TeamViewModel
 
+/**
+ * Composable function that displays the team screen.
+ *
+ * @param teamId The unique identifier of the team.
+ * @param viewModel The ViewModel that manages the state of the team screen. Defaults to an instance provided by AppViewModelProvider.
+ */
 @Composable
 fun TeamScreen(
     teamId: String,

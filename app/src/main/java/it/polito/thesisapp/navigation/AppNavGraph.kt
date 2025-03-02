@@ -12,6 +12,12 @@ import it.polito.thesisapp.ui.screens.ProfileScreen
 import it.polito.thesisapp.ui.screens.TeamScreen
 import it.polito.thesisapp.utils.Constants
 
+/**
+ * Adds the home navigation graph to the NavGraphBuilder.
+ * Sets up routes for home and create team screens.
+ *
+ * @param navigationManager The navigation manager used for navigation events
+ */
 fun NavGraphBuilder.homeGraph(
     navigationManager: NavigationManager,
 ) {
@@ -33,6 +39,12 @@ fun NavGraphBuilder.homeGraph(
     }
 }
 
+/**
+ * Adds the team navigation graph to the NavGraphBuilder.
+ * Sets up routes for team and create task screens.
+ *
+ * @param navigationManager The navigation manager used for navigation events
+ */
 fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
     composable(
         route = Constants.Navigation.Routes.TEAM,
@@ -54,7 +66,6 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
         val teamId = backStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
         CreateTaskScreen(
-            teamId = teamId,
             afterTaskCreated = {
                 navigationManager.navigate(
                     NavigationEvent.NavigateToTeamAfterTaskCreation(
@@ -66,6 +77,12 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
     }
 }
 
+/**
+ * Adds the profile navigation graph to the NavGraphBuilder.
+ * Sets up the route for the profile screen.
+ *
+ * @param navigationManager The navigation manager used for navigation events
+ */
 fun NavGraphBuilder.profileGraph(navigationManager: NavigationManager) {
     composable(Screen.buildProfileRoute()) {
         ProfileScreen(userId = Constants.User.USER_ID)

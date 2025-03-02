@@ -13,7 +13,11 @@ import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.ui.LocalNavController
 
-
+/**
+ * Composable function that displays the bottom navigation bar.
+ *
+ * @param navigationManager The navigation manager to handle navigation actions.
+ */
 @Composable
 fun AppBottomBar(navigationManager: NavigationManager) {
     val navController = LocalNavController.current
