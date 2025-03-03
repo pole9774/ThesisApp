@@ -53,6 +53,7 @@ object Constants {
             const val DESCRIPTION = "description"
             const val CREATION_DATE = "creationDate"
             const val ASSIGNED_MEMBERS = "assignedMembers"
+            const val STATUS = "status"
         }
 
         /**

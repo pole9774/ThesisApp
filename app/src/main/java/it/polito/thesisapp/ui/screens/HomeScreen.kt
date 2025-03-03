@@ -22,6 +22,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,12 +30,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import it.polito.thesisapp.R
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
+import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.model.Team
 import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.AppViewModelProvider
@@ -186,19 +189,45 @@ private fun TaskCard(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = task.name,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = task.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                TaskStatusChip(status = task.status)
+            }
+
             Text(
                 text = task.description,
                 style = MaterialTheme.typography.bodyMedium
             )
+
             Text(
                 text = "${task.assignedMembers.size} assigned members",
                 style = MaterialTheme.typography.bodySmall
             )
         }
+    }
+}
+
+@Composable
+private fun TaskStatusChip(status: TaskStatus) {
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = Color(status.color),
+        contentColor = Color.White,
+        modifier = Modifier.padding(4.dp)
+    ) {
+        Text(
+            text = status.displayName,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 

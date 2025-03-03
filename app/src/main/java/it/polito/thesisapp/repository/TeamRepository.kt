@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import it.polito.thesisapp.model.Task
+import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.model.Team
 import it.polito.thesisapp.model.TeamMember
 import it.polito.thesisapp.utils.Constants
@@ -263,8 +264,18 @@ class TeamRepository {
                 mapOf(
                     Constants.FirestoreFields.Task.NAME to taskName,
                     Constants.FirestoreFields.Task.DESCRIPTION to taskDescription,
-                    Constants.FirestoreFields.Task.CREATION_DATE to Timestamp.now()
+                    Constants.FirestoreFields.Task.CREATION_DATE to Timestamp.now(),
+                    Constants.FirestoreFields.Task.STATUS to TaskStatus.TODO.name
                 )
             ).await()
+    }
+
+    suspend fun updateTaskStatus(teamId: String, taskId: String, status: TaskStatus) {
+        db.collection(Constants.FirestoreCollections.TEAMS)
+            .document(teamId)
+            .collection(Constants.FirestoreCollections.TEAM_TASKS)
+            .document(taskId)
+            .update(Constants.FirestoreFields.Task.STATUS, status.name)
+            .await()
     }
 }

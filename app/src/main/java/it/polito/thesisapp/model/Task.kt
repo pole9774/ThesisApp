@@ -21,6 +21,7 @@ data class Task(
     val name: String = "",
     val description: String = "",
     val creationDate: Timestamp = Timestamp.now(),
+    val status: TaskStatus = TaskStatus.TODO,
     val assignedMembers: List<DocumentReference> = emptyList()
 ) {
     companion object {
@@ -38,6 +39,7 @@ data class Task(
                 description = data[Constants.FirestoreFields.Task.DESCRIPTION] as? String ?: "",
                 creationDate = data[Constants.FirestoreFields.Task.CREATION_DATE] as? Timestamp
                     ?: Timestamp.now(),
+                status = TaskStatus.fromString(data[Constants.FirestoreFields.Task.STATUS] as? String),
                 assignedMembers = emptyList()
             )
         }
