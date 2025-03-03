@@ -9,6 +9,7 @@ import it.polito.thesisapp.ui.screens.CreateTaskScreen
 import it.polito.thesisapp.ui.screens.CreateTeamScreen
 import it.polito.thesisapp.ui.screens.HomeScreen
 import it.polito.thesisapp.ui.screens.ProfileScreen
+import it.polito.thesisapp.ui.screens.TaskScreen
 import it.polito.thesisapp.ui.screens.TeamScreen
 import it.polito.thesisapp.utils.Constants
 
@@ -26,6 +27,9 @@ fun NavGraphBuilder.homeGraph(
             userId = Constants.User.USER_ID,
             onNavigateToTeam = { teamId ->
                 navigationManager.navigate(NavigationEvent.NavigateToTeam(teamId))
+            },
+            onNavigateToTask = { teamId, taskId ->
+                navigationManager.navigate(NavigationEvent.NavigateToTask(teamId, taskId))
             }
         )
     }
@@ -54,7 +58,12 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
     ) { backStackEntry ->
         val teamId = backStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
-        TeamScreen(teamId = teamId)
+        TeamScreen(
+            teamId = teamId,
+            onNavigateToTask = { teamId, taskId ->
+                navigationManager.navigate(NavigationEvent.NavigateToTask(teamId, taskId))
+            }
+        )
     }
 
     composable(
@@ -86,5 +95,28 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
 fun NavGraphBuilder.profileGraph(navigationManager: NavigationManager) {
     composable(Screen.buildProfileRoute()) {
         ProfileScreen(userId = Constants.User.USER_ID)
+    }
+}
+
+fun NavGraphBuilder.taskGraph(navigationManager: NavigationManager) {
+    composable(
+        route = "${Constants.Navigation.Routes.TEAM_TASK_BASE}/{${Constants.Navigation.Params.TEAM_ID}}/{${Constants.Navigation.Params.TASK_ID}}",
+        arguments = listOf(
+            navArgument(Constants.Navigation.Params.TEAM_ID) {
+                type = NavType.StringType
+            },
+            navArgument(Constants.Navigation.Params.TASK_ID) {
+                type = NavType.StringType
+            }
+        )
+    ) { navBackStackEntry ->
+        val teamId =
+            navBackStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID) ?: ""
+        val taskId =
+            navBackStackEntry.arguments?.getString(Constants.Navigation.Params.TASK_ID) ?: ""
+        TaskScreen(
+            teamId = teamId,
+            taskId = taskId
+        )
     }
 }

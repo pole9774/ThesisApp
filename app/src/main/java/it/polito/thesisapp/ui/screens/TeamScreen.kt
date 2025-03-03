@@ -44,7 +44,8 @@ import it.polito.thesisapp.viewmodel.TeamViewModel
 @Composable
 fun TeamScreen(
     teamId: String,
-    viewModel: TeamViewModel = AppViewModelProvider.teamViewModel()
+    viewModel: TeamViewModel = AppViewModelProvider.teamViewModel(),
+    onNavigateToTask: (String, String) -> Unit = { _, _ -> }
 ) {
     val team by viewModel.team.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -133,12 +134,14 @@ fun TeamScreen(
                         ) { task ->
                             TaskCard(
                                 task = task,
+                                teamId = teamId,
                                 modifier = Modifier.animateItem(
                                     fadeInSpec = null, fadeOutSpec = null, placementSpec = tween(
                                         durationMillis = 300,
                                         easing = FastOutSlowInEasing
                                     )
-                                )
+                                ),
+                                onTaskClick = onNavigateToTask
                             )
                         }
                     }
@@ -151,12 +154,13 @@ fun TeamScreen(
 @Composable
 private fun TaskCard(
     task: Task,
+    teamId: String,
     modifier: Modifier = Modifier,
-    onTaskClick: () -> Unit = {}
+    onTaskClick: (String, String) -> Unit = { _, _ -> }
 ) {
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
-        onClick = onTaskClick
+        onClick = { onTaskClick(teamId, task.id) }
     ) {
         Column(
             modifier = Modifier
@@ -217,7 +221,7 @@ private fun FilterChipRow(
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TaskStatus.values().forEach { status ->
+        TaskStatus.entries.forEach { status ->
             FilterChip(
                 selected = status in selectedFilters,
                 onClick = { onFilterToggle(status) },

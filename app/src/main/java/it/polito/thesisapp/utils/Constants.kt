@@ -88,6 +88,7 @@ object Constants {
         // Parameters
         object Params {
             const val TEAM_ID = "teamId"
+            const val TASK_ID = "task_id"
         }
 
         // Full route patterns with parameter placeholders
@@ -97,6 +98,7 @@ object Constants {
             const val CREATE_TEAM = "${CREATE_TEAM_BASE}/"
             const val CREATE_TASK = "${CREATE_TASK_BASE}/{${Params.TEAM_ID}}"
             const val PROFILE = "${PROFILE_BASE}/"
+            const val TEAM_TASK_BASE = "task"
         }
 
         // Tags for saved state

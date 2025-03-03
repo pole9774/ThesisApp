@@ -54,7 +54,8 @@ import it.polito.thesisapp.viewmodel.HomeViewModel
 fun HomeScreen(
     userId: String,
     viewModel: HomeViewModel = AppViewModelProvider.homeViewModel(),
-    onNavigateToTeam: (String) -> Unit
+    onNavigateToTeam: (String) -> Unit,
+    onNavigateToTask: (String, String) -> Unit
 ) {
     val profile by viewModel.profile.collectAsState()
     val teams by viewModel.teams.collectAsState()
@@ -88,7 +89,8 @@ fun HomeScreen(
                 )
                 HorizontalDivider()
                 TasksSection(
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    onNavigateToTask = onNavigateToTask
                 )
             }
         }
@@ -102,11 +104,15 @@ fun HomeScreen(
  */
 @Composable
 private fun TasksSection(
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    onNavigateToTask: (String, String) -> Unit
 ) {
     val sortMode by viewModel.taskSortMode.collectAsState()
     val sortedTasks by viewModel.sortedTasks.collectAsState()
     val lazyListState = rememberLazyListState()
+    val teams by viewModel.teams.collectAsState()
+    val selectedTeamIndex by viewModel.selectedTeamIndex.collectAsState()
+    val currentTeam = teams.getOrNull(selectedTeamIndex)
 
     LaunchedEffect(sortMode) {
         lazyListState.animateScrollToItem(0)
@@ -155,12 +161,14 @@ private fun TasksSection(
                 ) { task ->
                     TaskCard(
                         task = task,
+                        teamId = currentTeam?.id ?: "",
                         modifier = Modifier.animateItem(
                             fadeInSpec = null, fadeOutSpec = null, placementSpec = tween(
                                 durationMillis = 300,
                                 easing = FastOutSlowInEasing
                             )
-                        )
+                        ),
+                        onTaskClick = onNavigateToTask
                     )
                 }
             }
@@ -177,11 +185,13 @@ private fun TasksSection(
 @Composable
 private fun TaskCard(
     task: Task,
-    modifier: Modifier = Modifier
+    teamId: String,
+    modifier: Modifier = Modifier,
+    onTaskClick: (String, String) -> Unit
 ) {
     ElevatedCard(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        onClick = { onTaskClick(teamId, task.id) }
     ) {
         Column(
             modifier = Modifier

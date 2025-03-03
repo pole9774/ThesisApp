@@ -61,6 +61,8 @@ class NavigationManager(private val navController: NavController) {
          * Navigation event to navigate to the profile screen.
          */
         data object NavigateToProfile : NavigationEvent()
+
+        data class NavigateToTask(val teamId: String, val taskId: String) : NavigationEvent()
     }
 
     /**
@@ -82,7 +84,17 @@ class NavigationManager(private val navController: NavController) {
             )
 
             is NavigationEvent.NavigateToProfile -> navigateToProfile()
+            is NavigationEvent.NavigateToTask -> navigateToTask(event.teamId, event.taskId)
         }
+    }
+
+    private fun navigateToTask(teamId: String, taskId: String) {
+        navController.navigate(
+            Screen.buildTaskRoute(
+                teamId = teamId,
+                taskId = taskId
+            )
+        )
     }
 
     /**

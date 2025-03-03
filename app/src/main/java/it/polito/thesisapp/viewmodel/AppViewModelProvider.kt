@@ -68,6 +68,18 @@ object AppViewModelProvider {
         ProfileViewModel(profileRepository)
     }
 
+    @Composable
+    fun taskViewModel(): TaskViewModel = viewModel {
+        TaskViewModel(teamRepository)
+    }
+
+    fun getTaskViewModel(
+        viewModelStoreOwner: ViewModelStoreOwner,
+        factory: ViewModelProvider.Factory
+    ): TaskViewModel {
+        return ViewModelProvider(viewModelStoreOwner, factory)[TaskViewModel::class.java]
+    }
+
     /**
      * Retrieves an instance of TeamViewModel for non-composable contexts.
      *

@@ -56,6 +56,13 @@ sealed class Screen(val route: String, val icon: Int, val label: String) {
          */
         fun buildProfileRoute() = Constants.Navigation.Routes.PROFILE
 
+        fun buildTaskRoute(teamId: String, taskId: String) =
+            "${Constants.Navigation.Routes.TEAM_TASK_BASE}/$teamId/$taskId"
+
+        fun isTaskRoute(route: String?): Boolean {
+            return route?.startsWith(Constants.Navigation.Routes.TEAM_TASK_BASE) == true
+        }
+
         /**
          * Checks if a route is the home route.
          *
