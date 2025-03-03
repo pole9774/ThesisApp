@@ -2,6 +2,7 @@ package it.polito.thesisapp.ui.screens
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,13 +50,14 @@ fun TeamScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val sortMode by viewModel.taskSortMode.collectAsState()
     val sortedTasks by viewModel.sortedTasks.collectAsState()
+    val selectedFilters by viewModel.selectedStatusFilters.collectAsState() // Get selected filters
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(teamId) {
         viewModel.loadTeam(teamId)
     }
 
-    LaunchedEffect(sortMode) {
+    LaunchedEffect(sortMode, selectedFilters) {
         lazyListState.animateScrollToItem(0)
     }
 
@@ -88,7 +93,7 @@ fun TeamScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Tasks",
+                        text = "Tasks (" + sortedTasks.size + ")",
                         style = MaterialTheme.typography.titleLarge
                     )
 
@@ -104,6 +109,12 @@ fun TeamScreen(
                         )
                     }
                 }
+
+                // Add the FilterChipRow here
+                FilterChipRow(
+                    selectedFilters = selectedFilters,
+                    onFilterToggle = { viewModel.toggleStatusFilter(it) }
+                )
 
                 if (sortedTasks.isEmpty()) {
                     Text(
@@ -191,5 +202,33 @@ private fun TaskStatusChip(status: TaskStatus) {
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             style = MaterialTheme.typography.labelSmall
         )
+    }
+}
+
+@Composable
+private fun FilterChipRow(
+    selectedFilters: Set<TaskStatus>,
+    onFilterToggle: (TaskStatus) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        TaskStatus.values().forEach { status ->
+            FilterChip(
+                selected = status in selectedFilters,
+                onClick = { onFilterToggle(status) },
+                label = { Text(status.displayName) },
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    selectedContainerColor = Color(status.color).copy(alpha = 0.7f),
+                    selectedLabelColor = Color.White,
+                    selectedLeadingIconColor = Color.White
+                )
+            )
+        }
     }
 }

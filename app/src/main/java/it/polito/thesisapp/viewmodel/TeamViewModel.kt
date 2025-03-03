@@ -3,6 +3,7 @@ package it.polito.thesisapp.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import it.polito.thesisapp.model.Task
+import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.model.Team
 import it.polito.thesisapp.repository.TeamRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,12 +39,19 @@ class TeamViewModel(
     private val _sortedTasks = MutableStateFlow<List<Task>>(emptyList())
     val sortedTasks = _sortedTasks
 
+    private val _selectedStatusFilters = MutableStateFlow<Set<TaskStatus>>(
+        TaskStatus.values().toSet()
+    )
+    val selectedStatusFilters = _selectedStatusFilters
+
     init {
         viewModelScope.launch {
-            combine(_team, _taskSortMode) { team, sortMode ->
-                sortTasks(team?.tasks ?: emptyList(), sortMode)
-            }.collect { sortedList ->
-                _sortedTasks.value = sortedList
+            combine(_team, _taskSortMode, _selectedStatusFilters) { team, sortMode, filters ->
+                val tasks = team?.tasks ?: emptyList()
+                val filteredTasks = tasks.filter { it.status in filters }
+                sortTasks(filteredTasks, sortMode)
+            }.collect { sortedFilteredList ->
+                _sortedTasks.value = sortedFilteredList
             }
         }
     }
@@ -61,6 +69,15 @@ class TeamViewModel(
             TaskSortMode.DATE_DESC -> TaskSortMode.NAME_ASC
             TaskSortMode.NAME_ASC -> TaskSortMode.NAME_DESC
             TaskSortMode.NAME_DESC -> TaskSortMode.DATE_DESC
+        }
+    }
+
+    fun toggleStatusFilter(status: TaskStatus) {
+        val currentFilters = _selectedStatusFilters.value
+        _selectedStatusFilters.value = if (status in currentFilters) {
+            if (currentFilters.size > 1) currentFilters - status else currentFilters
+        } else {
+            currentFilters + status
         }
     }
 
