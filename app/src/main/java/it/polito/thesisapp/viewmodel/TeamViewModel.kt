@@ -39,8 +39,8 @@ class TeamViewModel(
     private val _sortedTasks = MutableStateFlow<List<Task>>(emptyList())
     val sortedTasks = _sortedTasks
 
-    private val _selectedStatusFilters = MutableStateFlow<Set<TaskStatus>>(
-        TaskStatus.values().toSet()
+    private val _selectedStatusFilters = MutableStateFlow(
+        TaskStatus.entries.toSet()
     )
     val selectedStatusFilters = _selectedStatusFilters
 
@@ -75,7 +75,7 @@ class TeamViewModel(
     fun toggleStatusFilter(status: TaskStatus) {
         val currentFilters = _selectedStatusFilters.value
         _selectedStatusFilters.value = if (status in currentFilters) {
-            if (currentFilters.size > 1) currentFilters - status else currentFilters
+            currentFilters - status
         } else {
             currentFilters + status
         }
