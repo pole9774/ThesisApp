@@ -13,8 +13,10 @@ import io.mockk.mockk
 import io.mockk.verify
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.Team
+import it.polito.thesisapp.model.TeamMember
 import it.polito.thesisapp.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,98 +27,84 @@ class HomeScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // Test constants
+    private val testUserId = "test-user"
+
+    // Test fixtures
+    private lateinit var mockViewModel: HomeViewModel
+    private val defaultTeams = listOf(
+        createTeam("1", "Team A", "AAA"),
+        createTeam("2", "Team B", "BBB"),
+        createTeam("3", "Team C", "CCC")
+    )
+
+    @Before
+    fun setUp() {
+        mockViewModel = createMockViewModel(defaultTeams)
+    }
+
     @Test
-    fun horizontalPager_displaysCorrectTeam() {
+    fun horizontalPager_whenSwiped_displaysNextTeamAndUpdatesSelection() {
         // Arrange
-        val teams = listOf(
-            Team(
-                id = "1",
-                name = "Team A",
-                description = "AAA",
-                members = emptyList(),
-                tasks = emptyList()
-            ),
-            Team(
-                id = "2",
-                name = "Team B",
-                description = "BBB",
-                members = emptyList(),
-                tasks = emptyList()
-            ),
-            Team(
-                id = "3",
-                name = "Team C",
-                description = "CCC",
-                members = emptyList(),
-                tasks = emptyList()
-            )
-        )
+        renderHomeScreen()
 
-        val mockViewModel = mockk<HomeViewModel>(relaxed = true)
-        val teamsFlow = MutableStateFlow(teams)
-        val selectedTeamIndexFlow = MutableStateFlow(0)
-        val isLoadingFlow = MutableStateFlow(false)
-        val profileFlow = MutableStateFlow(null)
-        val sortedTasksFlow = MutableStateFlow<List<Task>>(emptyList())
-        val taskSortModeFlow = MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
-
-        // Mock ViewModel state flows
-        every { mockViewModel.teams } returns teamsFlow
-        every { mockViewModel.selectedTeamIndex } returns selectedTeamIndexFlow
-        every { mockViewModel.isLoading } returns isLoadingFlow
-        every { mockViewModel.profile } returns profileFlow
-        every { mockViewModel.sortedTasks } returns sortedTasksFlow
-        every { mockViewModel.taskSortMode } returns taskSortModeFlow
-
-        // Act
-        composeTestRule.setContent {
-            HomeScreen(
-                userId = "test-user",
-                viewModel = mockViewModel,
-                onNavigateToTeam = {},
-                onNavigateToTask = { _, _ -> }
-            )
-        }
-
-        // Assert
+        // Assert initial state
         composeTestRule.onNodeWithText("Team A").assertIsDisplayed()
 
-        // Swipe to next team
+        // Act: Swipe to next team
         composeTestRule.onNode(hasText("Team A")).performTouchInput {
             swipeLeft()
         }
 
-        // Verify second team is displayed
+        // Assert
         composeTestRule.onNodeWithText("Team B").assertIsDisplayed()
-
-        // Verify select team was called
         verify { mockViewModel.selectTeam(1) }
     }
 
     @Test
-    fun teamCard_clickNavigatesToTeam() {
+    fun teamCard_whenClicked_navigatesToTeamDetails() {
         // Arrange
-        val teams = listOf(
-            Team(id = "1", name = "Team A", members = emptyList(), tasks = emptyList())
-        )
-        val mockViewModel = createMockViewModel(teams)
         var navigatedTeamId = ""
+        val singleTeam = listOf(createTeam("1", "Team A"))
+        mockViewModel = createMockViewModel(singleTeam)
 
         // Act
-        composeTestRule.setContent {
-            HomeScreen(
-                userId = "test-user",
-                viewModel = mockViewModel,
-                onNavigateToTeam = { teamId -> navigatedTeamId = teamId },
-                onNavigateToTask = { _, _ -> }
-            )
-        }
-
-        // Click on team card
+        renderHomeScreen(onNavigateToTeam = { teamId -> navigatedTeamId = teamId })
         composeTestRule.onNodeWithText("Team A").performClick()
 
-        // Assert navigation was triggered with correct ID
-        assert(navigatedTeamId == "1")
+        // Assert
+        assert(navigatedTeamId == "1") { "Expected navigation to team '1', but got '$navigatedTeamId'" }
+    }
+
+    // Helper methods
+    private fun renderHomeScreen(
+        onNavigateToTeam: (String) -> Unit = {},
+        onNavigateToTask: (String, String) -> Unit = { _, _ -> }
+    ) {
+        composeTestRule.setContent {
+            HomeScreen(
+                userId = testUserId,
+                viewModel = mockViewModel,
+                onNavigateToTeam = onNavigateToTeam,
+                onNavigateToTask = onNavigateToTask
+            )
+        }
+    }
+
+    private fun createTeam(
+        id: String,
+        name: String,
+        description: String = "",
+        members: List<TeamMember> = emptyList(),
+        tasks: List<Task> = emptyList()
+    ): Team {
+        return Team(
+            id = id,
+            name = name,
+            description = description,
+            members = members,
+            tasks = tasks
+        )
     }
 
     private fun createMockViewModel(teams: List<Team>): HomeViewModel {
