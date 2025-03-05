@@ -1,6 +1,9 @@
 package it.polito.thesisapp.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.repository.ProfileRepository
 import it.polito.thesisapp.repository.TeamRepository
@@ -8,6 +11,7 @@ import it.polito.thesisapp.utils.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel for creating a team.
@@ -15,10 +19,11 @@ import kotlinx.coroutines.launch
  * @property teamRepository Repository for team-related operations.
  * @property profileRepository Repository for profile-related operations.
  */
-class CreateTeamViewModel(
-    private val teamRepository: TeamRepository = TeamRepository(),
-    private val profileRepository: ProfileRepository = ProfileRepository()
-) : BaseViewModel() {
+@HiltViewModel
+class CreateTeamViewModel @Inject constructor(
+    private val teamRepository: TeamRepository,
+    private val profileRepository: ProfileRepository
+) : ViewModel() {
 
     /**
      * StateFlow to indicate if the team has been created.
@@ -59,7 +64,6 @@ class CreateTeamViewModel(
                     _isLoading.value = false
                 }
             } catch (e: Exception) {
-                setError(e.message)
                 _isLoading.value = false
             }
         }
@@ -84,7 +88,7 @@ class CreateTeamViewModel(
         teamDescription: String,
         onSuccess: () -> Unit
     ) {
-        if (!validateNotBlank(teamName, "Team name")) {
+        if (teamName.isBlank()) {
             return
         }
 
@@ -92,11 +96,9 @@ class CreateTeamViewModel(
             try {
                 teamRepository.createTeam(teamName, teamDescription, _selectedProfileIds.value)
                 _teamCreated.value = true
-                setError(null)
                 onSuccess()
             } catch (e: Exception) {
                 _teamCreated.value = false
-                setError(e.message)
             }
         }
     }

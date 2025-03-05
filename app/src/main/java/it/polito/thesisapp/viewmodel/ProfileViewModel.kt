@@ -1,19 +1,23 @@
 package it.polito.thesisapp.viewmodel
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.repository.ProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel for managing profile data.
  *
  * @property profileRepository Repository for profile-related operations.
  */
-class ProfileViewModel(
-    private val profileRepository: ProfileRepository = ProfileRepository()
-) : BaseViewModel() {
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val profileRepository: ProfileRepository
+) : ViewModel() {
 
     /**
      * StateFlow to hold the current profile.
@@ -41,7 +45,6 @@ class ProfileViewModel(
                     _isLoading.value = false
                 }
             } catch (e: Exception) {
-                setError(e.message)
                 _isLoading.value = false
             }
         }

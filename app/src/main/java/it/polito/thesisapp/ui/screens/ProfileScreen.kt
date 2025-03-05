@@ -17,10 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.ui.components.UserMonogram
-import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.ProfileViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -34,7 +34,7 @@ import java.util.Locale
 @Composable
 fun ProfileScreen(
     userId: String,
-    viewModel: ProfileViewModel = AppViewModelProvider.profileViewModel()
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val profile by viewModel.profile.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()

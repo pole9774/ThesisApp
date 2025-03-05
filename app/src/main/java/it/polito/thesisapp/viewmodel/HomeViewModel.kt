@@ -1,7 +1,9 @@
 package it.polito.thesisapp.viewmodel
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentReference
+import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.Team
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel for the Home screen.
@@ -18,10 +21,11 @@ import kotlinx.coroutines.launch
  * @property profileRepository Repository for profile-related operations.
  * @property teamRepository Repository for team-related operations.
  */
-class HomeViewModel(
-    private val profileRepository: ProfileRepository = ProfileRepository(),
-    private val teamRepository: TeamRepository = TeamRepository()
-) : BaseViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val profileRepository: ProfileRepository,
+    private val teamRepository: TeamRepository
+) : ViewModel() {
 
     /**
      * StateFlow to hold the current profile.
@@ -118,7 +122,6 @@ class HomeViewModel(
                     loadTeams(profile?.teams ?: emptyList())
                 }
             } catch (e: Exception) {
-                setError(e.message)
                 _isLoading.value = false
             }
         }
@@ -154,7 +157,6 @@ class HomeViewModel(
                     }
                 }
             } catch (e: Exception) {
-                setError(e.message)
                 _isLoading.value = false
             }
         }

@@ -3,6 +3,7 @@ package it.polito.thesisapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import dagger.hilt.android.AndroidEntryPoint
 import it.polito.thesisapp.ui.screens.MainScreen
 import it.polito.thesisapp.ui.theme.ThesisAppTheme
 
@@ -10,6 +11,7 @@ import it.polito.thesisapp.ui.theme.ThesisAppTheme
  * Main activity of the application.
  * This activity sets the content view to the main screen of the app.
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     /**
      * Called when the activity is starting.

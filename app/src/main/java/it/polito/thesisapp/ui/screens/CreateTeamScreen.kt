@@ -26,13 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.ui.components.UserMonogram
 import it.polito.thesisapp.utils.Constants
-import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 
 /**
@@ -45,12 +45,11 @@ import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 @Composable
 fun CreateTeamScreen(
     navigationManager: NavigationManager = LocalNavigationManager.current,
-    viewModel: CreateTeamViewModel = AppViewModelProvider.createTeamViewModel(),
+    viewModel: CreateTeamViewModel = hiltViewModel(),
     afterTeamCreated: () -> Unit = {},
 ) {
     var teamName by remember { mutableStateOf("") }
     var teamDescription by remember { mutableStateOf("") }
-    val error by viewModel.error.collectAsState()
     val allProfiles by viewModel.allProfiles.collectAsState()
     val selectedProfileIds by viewModel.selectedProfileIds.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -131,17 +130,6 @@ fun CreateTeamScreen(
                             viewModel.toggleProfileSelection(profile.id, selected)
                         }
                     )
-                }
-
-                item {
-                    error?.let {
-                        Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                    }
                 }
             }
         }

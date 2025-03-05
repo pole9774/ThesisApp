@@ -1,7 +1,9 @@
 package it.polito.thesisapp.viewmodel
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.model.Team
@@ -9,15 +11,17 @@ import it.polito.thesisapp.repository.TeamRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel for managing team data.
  *
  * @property teamRepository Repository for team-related operations.
  */
-class TeamViewModel(
-    private val teamRepository: TeamRepository = TeamRepository()
-) : BaseViewModel() {
+@HiltViewModel
+class TeamViewModel @Inject constructor(
+    private val teamRepository: TeamRepository
+) : ViewModel() {
 
     /**
      * StateFlow to hold the current team.

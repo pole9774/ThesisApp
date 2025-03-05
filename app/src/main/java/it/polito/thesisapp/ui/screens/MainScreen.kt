@@ -7,6 +7,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -20,7 +21,8 @@ import it.polito.thesisapp.ui.LocalNavController
 import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.AppBottomBar
 import it.polito.thesisapp.ui.components.MainFab
-import it.polito.thesisapp.viewmodel.AppViewModelProvider
+import it.polito.thesisapp.viewmodel.CreateTaskViewModel
+import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 import it.polito.thesisapp.viewmodel.MainScreenViewModel
 
 /**
@@ -29,15 +31,14 @@ import it.polito.thesisapp.viewmodel.MainScreenViewModel
  */
 @Composable
 fun MainScreen(
-    viewModel: MainScreenViewModel = AppViewModelProvider.mainScreenViewModel()
+    viewModel: MainScreenViewModel = hiltViewModel(),
+    createTeamViewModel: CreateTeamViewModel = hiltViewModel(),
+    createTaskViewModel: CreateTaskViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
     val navigationManager = remember { NavigationManager(navController) }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
-
-    val createTeamViewModel = AppViewModelProvider.createTeamViewModel()
-    val createTaskViewModel = AppViewModelProvider.createTaskViewModel()
 
     CompositionLocalProvider(
         LocalNavController provides navController,
@@ -53,11 +54,7 @@ fun MainScreen(
                             navigationManager = navigationManager,
                             currentRoute = currentRoute,
                             createTeamAction = { name, description, onSuccess ->
-                                createTeamViewModel.submitTeamAndNavigate(
-                                    name,
-                                    description,
-                                    onSuccess
-                                )
+                                createTeamViewModel.submitTeamAndNavigate(name, description, onSuccess)
                             },
                             createTaskAction = { teamId, name, description ->
                                 createTaskViewModel.createTask(teamId, name, description)

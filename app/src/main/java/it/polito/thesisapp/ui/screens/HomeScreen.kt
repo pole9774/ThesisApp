@@ -34,13 +34,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import it.polito.thesisapp.R
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.model.Team
 import it.polito.thesisapp.ui.components.LoadingIndicator
-import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.HomeViewModel
 
 /**
@@ -53,7 +53,7 @@ import it.polito.thesisapp.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     userId: String,
-    viewModel: HomeViewModel = AppViewModelProvider.homeViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToTeam: (String) -> Unit,
     onNavigateToTask: (String, String) -> Unit
 ) {

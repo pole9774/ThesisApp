@@ -34,17 +34,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import it.polito.thesisapp.R
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.ui.components.LoadingIndicator
-import it.polito.thesisapp.viewmodel.AppViewModelProvider
 import it.polito.thesisapp.viewmodel.TeamViewModel
 
 @Composable
 fun TeamScreen(
     teamId: String,
-    viewModel: TeamViewModel = AppViewModelProvider.teamViewModel(),
+    viewModel: TeamViewModel = hiltViewModel(),
     onNavigateToTask: (String, String) -> Unit = { _, _ -> }
 ) {
     val team by viewModel.team.collectAsState()

@@ -1,17 +1,22 @@
 package it.polito.thesisapp.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 import it.polito.thesisapp.navigation.Screen
 import it.polito.thesisapp.utils.Constants
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel for the main screen that handles floating action button logic.
  * Centralizes navigation and action handling for the FAB across different screens.
  */
-class MainScreenViewModel : BaseViewModel() {
+@HiltViewModel
+class MainScreenViewModel @Inject constructor() : ViewModel() {
     /**
      * Handles floating action button clicks based on current route
      *
@@ -34,46 +39,34 @@ class MainScreenViewModel : BaseViewModel() {
                     }
 
                     Screen.isTeamRoute(currentRoute) -> {
-                        val teamId =
-                            navigationManager.getArgument(Constants.Navigation.Params.TEAM_ID)
+                        val teamId = navigationManager.getArgument(Constants.Navigation.Params.TEAM_ID)
                         if (teamId != null) {
                             navigationManager.navigate(NavigationEvent.NavigateToCreateTask(teamId))
                         }
                     }
 
                     Screen.isCreateTeamRoute(currentRoute) -> {
-                        val teamName =
-                            navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_NAME)
-                        val teamDescription =
-                            navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_DESCRIPTION)
-                                ?: ""
+                        val teamName = navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_NAME)
+                        val teamDescription = navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_DESCRIPTION) ?: ""
                         if (!teamName.isNullOrBlank()) {
                             createTeamAction(teamName, teamDescription) {
                                 navigationManager.navigate(NavigationEvent.NavigateToHomeAfterTeamCreation)
                             }
-                        } else {
-                            setError("Team name cannot be empty")
                         }
                     }
 
                     Screen.isCreateTaskRoute(currentRoute) -> {
-                        val teamId =
-                            navigationManager.getArgument(Constants.Navigation.Params.TEAM_ID)
-                        val taskName =
-                            navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_NAME)
-                        val taskDescription =
-                            navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_DESCRIPTION)
-                                ?: ""
+                        val teamId = navigationManager.getArgument(Constants.Navigation.Params.TEAM_ID)
+                        val taskName = navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_NAME)
+                        val taskDescription = navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_DESCRIPTION) ?: ""
 
                         if (!taskName.isNullOrBlank() && teamId != null) {
                             createTaskAction(teamId, taskName, taskDescription)
-                        } else {
-                            setError("Task name cannot be empty")
                         }
                     }
                 }
             } catch (e: Exception) {
-                setError(e.message)
+                e.message?.let { Log.e("Error", it) }
             }
         }
     }
