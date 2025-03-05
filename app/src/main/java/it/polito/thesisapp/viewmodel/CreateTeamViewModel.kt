@@ -79,37 +79,25 @@ class CreateTeamViewModel(
         }
     }
 
-    /**
-     * Creates a team with the given name and description.
-     *
-     * @param teamName The name of the team.
-     * @param teamDescription The description of the team.
-     */
-    private fun createTeam(teamName: String, teamDescription: String) {
+    fun submitTeamAndNavigate(
+        teamName: String,
+        teamDescription: String,
+        onSuccess: () -> Unit
+    ) {
+        if (!validateNotBlank(teamName, "Team name")) {
+            return
+        }
+
         viewModelScope.launch {
             try {
                 teamRepository.createTeam(teamName, teamDescription, _selectedProfileIds.value)
                 _teamCreated.value = true
                 setError(null)
+                onSuccess()
             } catch (e: Exception) {
                 _teamCreated.value = false
                 setError(e.message)
-                println("Error in ViewModel: ${e.message}")
             }
         }
-    }
-
-    /**
-     * Submits the team creation request.
-     *
-     * @param teamName The name of the team.
-     * @param teamDescription The description of the team.
-     */
-    fun submitTeam(teamName: String, teamDescription: String) {
-        if (!validateNotBlank(teamName, "Team name")) {
-            return
-        }
-
-        createTeam(teamName, teamDescription)
     }
 }

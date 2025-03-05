@@ -20,18 +20,24 @@ import it.polito.thesisapp.ui.LocalNavController
 import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.AppBottomBar
 import it.polito.thesisapp.ui.components.MainFab
-import it.polito.thesisapp.ui.components.handleFabClick
+import it.polito.thesisapp.viewmodel.AppViewModelProvider
+import it.polito.thesisapp.viewmodel.MainScreenViewModel
 
 /**
  * Composable function that displays the main screen of the application.
  * It sets up the navigation host and the bottom navigation bar.
  */
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    viewModel: MainScreenViewModel = AppViewModelProvider.mainScreenViewModel()
+) {
     val navController = rememberNavController()
     val navigationManager = remember { NavigationManager(navController) }
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
+
+    val createTeamViewModel = AppViewModelProvider.createTeamViewModel()
+    val createTaskViewModel = AppViewModelProvider.createTaskViewModel()
 
     CompositionLocalProvider(
         LocalNavController provides navController,
@@ -43,9 +49,19 @@ fun MainScreen() {
                 MainFab(
                     currentRoute = currentRoute,
                     onFabClick = {
-                        handleFabClick(
+                        viewModel.handleFabAction(
                             navigationManager = navigationManager,
                             currentRoute = currentRoute,
+                            createTeamAction = { name, description, onSuccess ->
+                                createTeamViewModel.submitTeamAndNavigate(
+                                    name,
+                                    description,
+                                    onSuccess
+                                )
+                            },
+                            createTaskAction = { teamId, name, description ->
+                                createTaskViewModel.createTask(teamId, name, description)
+                            }
                         )
                     }
                 )

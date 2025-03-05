@@ -7,11 +7,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import it.polito.thesisapp.navigation.NavigationManager
-import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 import it.polito.thesisapp.navigation.Screen
-import it.polito.thesisapp.utils.Constants
-import it.polito.thesisapp.viewmodel.AppViewModelProvider
 
 /**
  * Composable function that displays the main FloatingActionButton (FAB).
@@ -62,65 +58,3 @@ private fun getFabDescription(currentRoute: String?): String =
         Screen.isCreateTaskRoute(currentRoute) -> "Save Task"
         else -> "Add"
     }
-
-/**
- * Handles the click event for the FAB based on the current route.
- *
- * @param navigationManager The navigation manager to handle navigation actions.
- * @param currentRoute The current route in the navigation.
- */
-fun handleFabClick(
-    navigationManager: NavigationManager,
-    currentRoute: String?
-) {
-    when {
-        Screen.isHomeRoute(currentRoute) -> {
-            navigationManager.navigate(NavigationEvent.NavigateToCreateTeam)
-        }
-
-        Screen.isTeamRoute(currentRoute) -> {
-            val teamId = navigationManager.getArgument(Constants.Navigation.Params.TEAM_ID)
-            if (teamId != null) {
-                navigationManager.navigate(
-                    NavigationEvent.NavigateToCreateTask(
-                        teamId
-                    )
-                )
-            }
-        }
-
-        Screen.isCreateTeamRoute(currentRoute) -> {
-            val teamName =
-                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_NAME)
-            val teamDescription =
-                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TEAM_DESCRIPTION)
-                    ?: ""
-            if (!teamName.isNullOrBlank()) {
-                val viewModel = AppViewModelProvider.getCreateTeamViewModel(
-                    navigationManager.getCurrentBackStackEntry() ?: return,
-                    navigationManager.getCurrentBackStackEntry()?.defaultViewModelProviderFactory
-                        ?: return
-                )
-                viewModel.submitTeam(teamName, teamDescription)
-            }
-        }
-
-        Screen.isCreateTaskRoute(currentRoute) -> {
-            val teamId = navigationManager.getArgument(Constants.Navigation.Params.TEAM_ID)
-            val taskName =
-                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_NAME)
-            val taskDescription =
-                navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_DESCRIPTION)
-                    ?: ""
-
-            if (!taskName.isNullOrBlank() && teamId != null) {
-                val viewModel = AppViewModelProvider.getCreateTaskViewModel(
-                    navigationManager.getCurrentBackStackEntry() ?: return,
-                    navigationManager.getCurrentBackStackEntry()?.defaultViewModelProviderFactory
-                        ?: return
-                )
-                viewModel.createTask(teamId, taskName, taskDescription)
-            }
-        }
-    }
-}

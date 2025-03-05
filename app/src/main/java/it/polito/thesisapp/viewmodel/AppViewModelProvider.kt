@@ -73,6 +73,18 @@ object AppViewModelProvider {
         TaskViewModel(teamRepository)
     }
 
+    @Composable
+    fun mainScreenViewModel(): MainScreenViewModel = viewModel {
+        MainScreenViewModel()
+    }
+
+    fun getMainScreenViewModel(
+        viewModelStoreOwner: ViewModelStoreOwner,
+        factory: ViewModelProvider.Factory
+    ): MainScreenViewModel {
+        return ViewModelProvider(viewModelStoreOwner, factory)[MainScreenViewModel::class.java]
+    }
+
     fun getTaskViewModel(
         viewModelStoreOwner: ViewModelStoreOwner,
         factory: ViewModelProvider.Factory
