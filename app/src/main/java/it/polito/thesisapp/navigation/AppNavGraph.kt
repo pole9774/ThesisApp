@@ -22,7 +22,9 @@ import it.polito.thesisapp.utils.Constants
 fun NavGraphBuilder.homeGraph(
     navigationManager: NavigationManager,
 ) {
-    composable(Screen.buildHomeRoute()) {
+    composable(
+        route = Screen.buildHomeRoute()
+    ) {
         HomeScreen(
             userId = Constants.User.USER_ID,
             onNavigateToTeam = { teamId ->
@@ -33,7 +35,9 @@ fun NavGraphBuilder.homeGraph(
             }
         )
     }
-    composable(Screen.buildCreateTeamRoute()) {
+    composable(
+        route = Screen.buildCreateTeamRoute()
+    ) {
         CreateTeamScreen(
             navigationManager = navigationManager,
             afterTeamCreated = {
@@ -93,21 +97,19 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
  * @param navigationManager The navigation manager used for navigation events
  */
 fun NavGraphBuilder.profileGraph(navigationManager: NavigationManager) {
-    composable(Screen.buildProfileRoute()) {
+    composable(
+        route = Screen.buildProfileRoute()
+    ) {
         ProfileScreen(userId = Constants.User.USER_ID)
     }
 }
 
 fun NavGraphBuilder.taskGraph(navigationManager: NavigationManager) {
     composable(
-        route = "${Constants.Navigation.Routes.TEAM_TASK_BASE}/{${Constants.Navigation.Params.TEAM_ID}}/{${Constants.Navigation.Params.TASK_ID}}",
+        route = Constants.Navigation.Routes.TASK,
         arguments = listOf(
-            navArgument(Constants.Navigation.Params.TEAM_ID) {
-                type = NavType.StringType
-            },
-            navArgument(Constants.Navigation.Params.TASK_ID) {
-                type = NavType.StringType
-            }
+            navArgument(Constants.Navigation.Params.TEAM_ID) { type = NavType.StringType },
+            navArgument(Constants.Navigation.Params.TASK_ID) { type = NavType.StringType }
         )
     ) { navBackStackEntry ->
         val teamId =

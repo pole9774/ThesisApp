@@ -57,10 +57,12 @@ sealed class Screen(val route: String, val icon: Int, val label: String) {
         fun buildProfileRoute() = Constants.Navigation.Routes.PROFILE
 
         fun buildTaskRoute(teamId: String, taskId: String) =
-            "${Constants.Navigation.Routes.TEAM_TASK_BASE}/$teamId/$taskId"
+            Constants.Navigation.Routes.TASK
+                .replace("{${Constants.Navigation.Params.TEAM_ID}}", teamId)
+                .replace("{${Constants.Navigation.Params.TASK_ID}}", taskId)
 
         fun isTaskRoute(route: String?): Boolean {
-            return route?.startsWith(Constants.Navigation.Routes.TEAM_TASK_BASE) == true
+            return route?.startsWith(Constants.Navigation.Routes.TASK.substringBefore("{")) == true
         }
 
         /**
