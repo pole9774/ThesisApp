@@ -31,15 +31,14 @@ class CreateTaskViewModel @Inject constructor(
     private val _teamId = MutableStateFlow<String?>(null)
     val teamId: StateFlow<String?> = _teamId
 
-    /**
-     * Creates a task with the given details.
-     *
-     * @param teamId The ID of the team.
-     * @param taskName The name of the task.
-     * @param taskDescription The description of the task.
-     */
-    fun createTask(teamId: String, taskName: String, taskDescription: String) {
-        if (taskName.isNotBlank()) {
+
+    fun submitTaskAndNavigate(
+        teamId: String,
+        taskName: String,
+        taskDescription: String,
+        onSuccess: () -> Unit
+    ) {
+        if (taskName.isBlank()) {
             return
         }
 
@@ -47,9 +46,9 @@ class CreateTaskViewModel @Inject constructor(
             try {
                 teamRepository.createTask(teamId, taskName, taskDescription)
                 _taskCreated.value = true
+                onSuccess()
             } catch (e: Exception) {
                 _taskCreated.value = false
-                println("Error in ViewModel: ${e.message}")
             }
         }
     }

@@ -29,7 +29,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
         navigationManager: NavigationManager,
         currentRoute: String?,
         createTeamAction: (String, String, () -> Unit) -> Unit,
-        createTaskAction: (String, String, String) -> Unit
+        createTaskAction: (String, String, String, () -> Unit) -> Unit
     ) {
         viewModelScope.launch {
             try {
@@ -61,7 +61,9 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
                         val taskDescription = navigationManager.getCurrentArgument<String>(Constants.Navigation.Tags.TASK_DESCRIPTION) ?: ""
 
                         if (!taskName.isNullOrBlank() && teamId != null) {
-                            createTaskAction(teamId, taskName, taskDescription)
+                            createTaskAction(teamId, taskName, taskDescription) {
+                                navigationManager.navigate(NavigationEvent.NavigateToTeamAfterTaskCreation(teamId))
+                            }
                         }
                     }
                 }

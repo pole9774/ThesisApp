@@ -1,5 +1,7 @@
 package it.polito.thesisapp.ui.screens
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +29,6 @@ import it.polito.thesisapp.viewmodel.CreateTaskViewModel
 /**
  * Composable function that displays the screen for creating a new task.
  *
- * @param teamId The ID of the team for which the task is being created.
  * @param navigationManager The navigation manager to handle navigation actions.
  * @param viewModel The ViewModel for creating tasks.
  * @param afterTaskCreated Callback to be invoked after the task is created.
@@ -35,7 +36,7 @@ import it.polito.thesisapp.viewmodel.CreateTaskViewModel
 @Composable
 fun CreateTaskScreen(
     navigationManager: NavigationManager = LocalNavigationManager.current,
-    viewModel: CreateTaskViewModel = hiltViewModel(),
+    viewModel: CreateTaskViewModel = hiltViewModel(viewModelStoreOwner = LocalActivity.current as ComponentActivity),
     afterTaskCreated: () -> Unit = {},
 ) {
     var taskName by remember { mutableStateOf("") }

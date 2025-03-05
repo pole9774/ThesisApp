@@ -56,8 +56,8 @@ fun MainScreen(
                             createTeamAction = { name, description, onSuccess ->
                                 createTeamViewModel.submitTeamAndNavigate(name, description, onSuccess)
                             },
-                            createTaskAction = { teamId, name, description ->
-                                createTaskViewModel.createTask(teamId, name, description)
+                            createTaskAction = { teamId, name, description, onSuccess ->
+                                createTaskViewModel.submitTaskAndNavigate(teamId, name, description, onSuccess)
                             }
                         )
                     }

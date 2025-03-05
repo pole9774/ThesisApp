@@ -1,5 +1,7 @@
 package it.polito.thesisapp.ui.screens
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,7 +47,7 @@ import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 @Composable
 fun CreateTeamScreen(
     navigationManager: NavigationManager = LocalNavigationManager.current,
-    viewModel: CreateTeamViewModel = hiltViewModel(),
+    viewModel: CreateTeamViewModel = hiltViewModel(viewModelStoreOwner = LocalActivity.current as ComponentActivity),
     afterTeamCreated: () -> Unit = {},
 ) {
     var teamName by remember { mutableStateOf("") }
