@@ -40,6 +40,13 @@ import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.TaskViewModel
 
+/**
+ * Composable function that displays the task screen.
+ *
+ * @param teamId The ID of the team.
+ * @param taskId The ID of the task.
+ * @param viewModel The ViewModel for the task screen.
+ */
 @Composable
 fun TaskScreen(
     teamId: String,
@@ -82,6 +89,14 @@ fun TaskScreen(
     }
 }
 
+/**
+ * Composable function that displays the task header.
+ *
+ * @param task The task object.
+ * @param teamId The ID of the team.
+ * @param viewModel The ViewModel for the task screen.
+ * @param modifier The modifier to be applied to the header.
+ */
 @Composable
 private fun TaskHeader(
     task: Task,
@@ -115,6 +130,11 @@ private fun TaskHeader(
     }
 }
 
+/**
+ * Composable function that displays the task description.
+ *
+ * @param description The description of the task.
+ */
 @Composable
 private fun TaskDescription(description: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -129,6 +149,11 @@ private fun TaskDescription(description: String) {
     }
 }
 
+/**
+ * Composable function that displays the assigned members of the task.
+ *
+ * @param task The task object.
+ */
 @Composable
 private fun AssignedMembers(task: Task) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -143,6 +168,12 @@ private fun AssignedMembers(task: Task) {
     }
 }
 
+/**
+ * Composable function that displays a dropdown menu for selecting the task status.
+ *
+ * @param currentStatus The current status of the task.
+ * @param onStatusChanged Callback function to handle status change.
+ */
 @Composable
 fun TaskStatusSelector(
     currentStatus: TaskStatus,

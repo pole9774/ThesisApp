@@ -104,6 +104,12 @@ fun NavGraphBuilder.profileGraph(navigationManager: NavigationManager) {
     }
 }
 
+/**
+ * Adds the task navigation graph to the NavGraphBuilder.
+ * Sets up the route for the task screen.
+ *
+ * @param navigationManager The navigation manager used for navigation events
+ */
 fun NavGraphBuilder.taskGraph(navigationManager: NavigationManager) {
     composable(
         route = Constants.Navigation.Routes.TASK,

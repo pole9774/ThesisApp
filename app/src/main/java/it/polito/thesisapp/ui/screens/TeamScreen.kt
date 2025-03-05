@@ -41,6 +41,13 @@ import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.TeamViewModel
 
+/**
+ * Composable function that displays the team screen.
+ *
+ * @param teamId The ID of the team.
+ * @param viewModel The ViewModel for the team screen.
+ * @param onNavigateToTask Callback function to handle navigation to a task.
+ */
 @Composable
 fun TeamScreen(
     teamId: String,
@@ -151,6 +158,14 @@ fun TeamScreen(
     }
 }
 
+/**
+ * Composable function that displays a task card.
+ *
+ * @param task The task object.
+ * @param teamId The ID of the team.
+ * @param modifier The modifier to be applied to the card.
+ * @param onTaskClick Callback function to handle task click.
+ */
 @Composable
 private fun TaskCard(
     task: Task,
@@ -193,6 +208,11 @@ private fun TaskCard(
     }
 }
 
+/**
+ * Composable function that displays a chip for the task status.
+ *
+ * @param status The status of the task.
+ */
 @Composable
 private fun TaskStatusChip(status: TaskStatus) {
     Surface(
@@ -209,6 +229,12 @@ private fun TaskStatusChip(status: TaskStatus) {
     }
 }
 
+/**
+ * Composable function that displays a row of filter chips for task statuses.
+ *
+ * @param selectedFilters The set of selected task statuses.
+ * @param onFilterToggle Callback function to handle filter toggle.
+ */
 @Composable
 private fun FilterChipRow(
     selectedFilters: Set<TaskStatus>,

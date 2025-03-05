@@ -6,13 +6,13 @@ import dagger.hilt.android.HiltAndroidApp
 
 /**
  * Custom Application class for the ThesisApp.
- * This class is used to initialize Firebase when the application starts.
+ * This class initializes Firebase and sets up Hilt for dependency injection.
  */
 @HiltAndroidApp
 class ThesisApplication : Application() {
     /**
      * Called when the application is starting, before any other application objects have been created.
-     * This is where Firebase is initialized.
+     * Initializes Firebase for the application.
      */
     override fun onCreate() {
         super.onCreate()

@@ -18,12 +18,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenViewModel @Inject constructor() : ViewModel() {
     /**
-     * Handles floating action button clicks based on current route
+     * Handles the action of the Floating Action Button (FAB) based on the current route.
      *
-     * @param navigationManager Navigation manager for handling navigation events
-     * @param currentRoute Current navigation route
-     * @param createTeamAction Function to create a team with name and description
-     * @param createTaskAction Function to create a task with team ID, name and description
+     * @param navigationManager The navigation manager to handle navigation events.
+     * @param currentRoute The current route in the navigation.
+     * @param createTeamAction The action to create a team.
+     * @param createTaskAction The action to create a task.
      */
     fun handleFabAction(
         navigationManager: NavigationManager,

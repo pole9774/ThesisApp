@@ -18,8 +18,8 @@ import javax.inject.Inject
 /**
  * ViewModel for the Home screen.
  *
- * @property profileRepository Repository for profile-related operations.
- * @property teamRepository Repository for team-related operations.
+ * @property profileRepository The repository for managing profile data.
+ * @property teamRepository The repository for managing team data.
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -27,49 +27,35 @@ class HomeViewModel @Inject constructor(
     private val teamRepository: TeamRepository
 ) : ViewModel() {
 
-    /**
-     * StateFlow to hold the current profile.
-     */
+    // StateFlow to hold the profile data
     private val _profile = MutableStateFlow<Profile?>(null)
     val profile: StateFlow<Profile?> = _profile
 
-    /**
-     * StateFlow to hold the list of teams.
-     */
+    // StateFlow to hold the list of teams
     private val _teams = MutableStateFlow<List<Team>>(emptyList())
     val teams: StateFlow<List<Team>> = _teams
 
-    /**
-     * StateFlow to indicate if a loading operation is in progress.
-     */
+    // StateFlow to track loading state
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading
 
-    /**
-     * Enum class to define task sorting modes.
-     */
+    // Enum class for task sort modes
     enum class TaskSortMode { DATE_DESC, NAME_ASC, NAME_DESC }
 
-    /**
-     * StateFlow to hold the current task sorting mode.
-     */
+    // StateFlow to hold the current task sort mode
     private val _taskSortMode = MutableStateFlow(TaskSortMode.DATE_DESC)
     val taskSortMode = _taskSortMode
 
-    /**
-     * StateFlow to hold the sorted list of tasks.
-     */
+    // StateFlow to hold the sorted list of tasks
     private val _sortedTasks = MutableStateFlow<List<Task>>(emptyList())
     val sortedTasks = _sortedTasks
 
-    /**
-     * StateFlow to hold the index of the selected team.
-     */
+    // StateFlow to hold the selected team index
     private val _selectedTeamIndex = MutableStateFlow(0)
     val selectedTeamIndex = _selectedTeamIndex
 
     /**
-     * Initializes the ViewModel and sets up task sorting.
+     * Initializes the ViewModel and sets up the task sorting logic.
      */
     init {
         viewModelScope.launch {
@@ -83,10 +69,10 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Sorts tasks based on the specified sorting mode.
+     * Sorts the tasks based on the specified sort mode.
      *
-     * @param tasks The list of tasks to sort.
-     * @param mode The sorting mode to use.
+     * @param tasks The list of tasks to be sorted.
+     * @param mode The sort mode to be applied.
      * @return The sorted list of tasks.
      */
     private fun sortTasks(tasks: List<Task>, mode: TaskSortMode): List<Task> {
@@ -98,7 +84,7 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Toggles the task sorting mode.
+     * Toggles the task sort mode.
      */
     fun toggleSortMode() {
         _taskSortMode.value = when (_taskSortMode.value) {
@@ -109,9 +95,9 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Loads the profile for the specified user ID.
+     * Loads the profile data for the specified user ID.
      *
-     * @param userId The ID of the user whose profile is to be loaded.
+     * @param userId The ID of the user.
      */
     fun loadProfile(userId: String) {
         viewModelScope.launch {
@@ -163,9 +149,9 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Selects a team by its index.
+     * Selects the team at the specified index.
      *
-     * @param index The index of the team to select.
+     * @param index The index of the team to be selected.
      */
     fun selectTeam(index: Int) {
         if (index >= 0 && index < _teams.value.size) {

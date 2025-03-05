@@ -225,6 +225,15 @@ private fun TaskCard(
     }
 }
 
+/**
+ * Displays a chip showing the status of a task.
+ *
+ * This composable creates a colored surface based on the task's status color
+ * and displays the status name inside it. The background color is taken from
+ * the status object, while the text is always white for contrast.
+ *
+ * @param status The TaskStatus object containing the display name and color to be shown
+ */
 @Composable
 private fun TaskStatusChip(status: TaskStatus) {
     Surface(

@@ -26,8 +26,11 @@ import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 import it.polito.thesisapp.viewmodel.MainScreenViewModel
 
 /**
- * Composable function that displays the main screen of the application.
- * It sets up the navigation host and the bottom navigation bar.
+ * Main screen composable function that sets up the navigation and UI components.
+ *
+ * @param viewModel The ViewModel for the main screen.
+ * @param createTeamViewModel The ViewModel for creating a team.
+ * @param createTaskViewModel The ViewModel for creating a task.
  */
 @Composable
 fun MainScreen(

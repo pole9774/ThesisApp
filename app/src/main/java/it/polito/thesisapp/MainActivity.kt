@@ -8,8 +8,8 @@ import it.polito.thesisapp.ui.screens.MainScreen
 import it.polito.thesisapp.ui.theme.ThesisAppTheme
 
 /**
- * Main activity of the application.
- * This activity sets the content view to the main screen of the app.
+ * MainActivity is the entry point of the application.
+ * It sets up the main content view using Jetpack Compose.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
      * Called when the activity is starting.
      * This is where most initialization should go.
      *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

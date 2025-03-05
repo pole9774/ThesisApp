@@ -14,40 +14,42 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for managing team data.
+ * ViewModel for managing team data and tasks.
  *
- * @property teamRepository Repository for team-related operations.
+ * @property teamRepository The repository for managing team data.
  */
 @HiltViewModel
 class TeamViewModel @Inject constructor(
     private val teamRepository: TeamRepository
 ) : ViewModel() {
 
-    /**
-     * StateFlow to hold the current team.
-     */
+
+    // StateFlow to hold the team data
     private val _team = MutableStateFlow<Team?>(null)
     val team = _team
 
-    /**
-     * StateFlow to indicate if a loading operation is in progress.
-     */
+    // StateFlow to track loading state
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading
 
+    // Enum class for task sort modes
     enum class TaskSortMode { DATE_DESC, NAME_ASC, NAME_DESC }
 
+    // StateFlow to hold the current task sort mode
     private val _taskSortMode = MutableStateFlow(TaskSortMode.DATE_DESC)
     val taskSortMode = _taskSortMode
 
+    // StateFlow to hold the sorted list of tasks
     private val _sortedTasks = MutableStateFlow<List<Task>>(emptyList())
     val sortedTasks = _sortedTasks
 
-    private val _selectedStatusFilters = MutableStateFlow(
-        TaskStatus.entries.toSet()
-    )
+    // StateFlow to hold the selected status filters
+    private val _selectedStatusFilters = MutableStateFlow(TaskStatus.entries.toSet())
     val selectedStatusFilters = _selectedStatusFilters
 
+    /**
+     * Initializes the ViewModel and sets up the task sorting and filtering logic.
+     */
     init {
         viewModelScope.launch {
             combine(_team, _taskSortMode, _selectedStatusFilters) { team, sortMode, filters ->
@@ -60,6 +62,13 @@ class TeamViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Sorts the tasks based on the specified sort mode.
+     *
+     * @param tasks The list of tasks to be sorted.
+     * @param mode The sort mode to be applied.
+     * @return The sorted list of tasks.
+     */
     private fun sortTasks(tasks: List<Task>, mode: TaskSortMode): List<Task> {
         return when (mode) {
             TaskSortMode.DATE_DESC -> tasks.sortedByDescending { it.creationDate }
@@ -68,6 +77,9 @@ class TeamViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Toggles the task sort mode.
+     */
     fun toggleSortMode() {
         _taskSortMode.value = when (_taskSortMode.value) {
             TaskSortMode.DATE_DESC -> TaskSortMode.NAME_ASC
@@ -76,6 +88,11 @@ class TeamViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Toggles the status filter for tasks.
+     *
+     * @param status The status to be toggled.
+     */
     fun toggleStatusFilter(status: TaskStatus) {
         val currentFilters = _selectedStatusFilters.value
         _selectedStatusFilters.value = if (status in currentFilters) {
@@ -86,9 +103,9 @@ class TeamViewModel @Inject constructor(
     }
 
     /**
-     * Loads the team for the specified team ID.
+     * Loads the team data for the specified team ID.
      *
-     * @param teamId The ID of the team to be loaded.
+     * @param teamId The ID of the team.
      */
     fun loadTeam(teamId: String) {
         viewModelScope.launch {

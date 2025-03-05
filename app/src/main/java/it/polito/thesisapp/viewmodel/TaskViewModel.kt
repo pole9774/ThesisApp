@@ -9,21 +9,33 @@ import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.repository.TeamRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for managing tasks.
+ *
+ * @property teamRepository The repository for managing team data.
+ */
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val teamRepository: TeamRepository
 ) : ViewModel() {
 
+    // StateFlow to hold the task data
     private val _task = MutableStateFlow<Task?>(null)
-    val task: StateFlow<Task?> = _task
+    val task = _task
 
+    // StateFlow to track loading state
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading = _isLoading
 
+    /**
+     * Loads the task data for the specified team and task IDs.
+     *
+     * @param teamId The ID of the team.
+     * @param taskId The ID of the task.
+     */
     fun loadTask(teamId: String, taskId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -36,6 +48,13 @@ class TaskViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Updates the status of the specified task.
+     *
+     * @param teamId The ID of the team.
+     * @param taskId The ID of the task.
+     * @param newStatus The new status of the task.
+     */
     fun updateTaskStatus(teamId: String, taskId: String, newStatus: TaskStatus) {
         viewModelScope.launch {
             _isLoading.value = true

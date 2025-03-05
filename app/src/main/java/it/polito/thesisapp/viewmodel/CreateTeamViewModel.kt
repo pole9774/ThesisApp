@@ -8,15 +8,14 @@ import it.polito.thesisapp.repository.ProfileRepository
 import it.polito.thesisapp.repository.TeamRepository
 import it.polito.thesisapp.utils.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for creating a team.
+ * ViewModel for creating teams.
  *
- * @property teamRepository Repository for team-related operations.
- * @property profileRepository Repository for profile-related operations.
+ * @property teamRepository The repository for managing team data.
+ * @property profileRepository The repository for managing profile data.
  */
 @HiltViewModel
 class CreateTeamViewModel @Inject constructor(
@@ -24,27 +23,19 @@ class CreateTeamViewModel @Inject constructor(
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
 
-    /**
-     * StateFlow to indicate if the team has been created.
-     */
+    // StateFlow to track if a team has been created
     private val _teamCreated = MutableStateFlow(false)
-    val teamCreated: StateFlow<Boolean> = _teamCreated
+    val teamCreated = _teamCreated
 
-    /**
-     * StateFlow to hold all profiles.
-     */
+    // StateFlow to hold all profiles
     private val _allProfiles = MutableStateFlow<List<Profile>>(emptyList())
     val allProfiles = _allProfiles
 
-    /**
-     * StateFlow to hold selected profile IDs.
-     */
+    // StateFlow to hold selected profile IDs
     private val _selectedProfileIds = MutableStateFlow<Set<String>>(setOf())
     val selectedProfileIds = _selectedProfileIds
 
-    /**
-     * StateFlow to indicate if a loading operation is in progress.
-     */
+    // StateFlow to track loading state
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading
 
@@ -71,7 +62,7 @@ class CreateTeamViewModel @Inject constructor(
     /**
      * Toggles the selection of a profile.
      *
-     * @param profileId The ID of the profile to toggle.
+     * @param profileId The ID of the profile.
      * @param isSelected Whether the profile is selected.
      */
     fun toggleProfileSelection(profileId: String, isSelected: Boolean) {
@@ -82,6 +73,13 @@ class CreateTeamViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Submits a team and navigates to the next screen on success.
+     *
+     * @param teamName The name of the team.
+     * @param teamDescription The description of the team.
+     * @param onSuccess Callback function to be called on successful team creation.
+     */
     fun submitTeamAndNavigate(
         teamName: String,
         teamDescription: String,

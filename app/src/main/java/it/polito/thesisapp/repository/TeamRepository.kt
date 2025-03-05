@@ -256,7 +256,11 @@ class TeamRepository {
      * @param taskName Name of the task
      * @param taskDescription Description of the task
      */
-    suspend fun createTask(teamId: String, taskName: String, taskDescription: String) {
+    suspend fun createTask(
+        teamId: String,
+        taskName: String,
+        taskDescription: String
+    ) {
         val teamRef = db.collection(Constants.FirestoreCollections.TEAMS).document(teamId)
 
         teamRef.collection(Constants.FirestoreCollections.TEAM_TASKS)
@@ -270,7 +274,18 @@ class TeamRepository {
             ).await()
     }
 
-    suspend fun updateTaskStatus(teamId: String, taskId: String, status: TaskStatus) {
+    /**
+     * Updates the status of a task in Firestore.
+     *
+     * @param teamId ID of the team
+     * @param taskId ID of the task
+     * @param status New status of the task
+     */
+    suspend fun updateTaskStatus(
+        teamId: String,
+        taskId: String,
+        status: TaskStatus
+    ) {
         db.collection(Constants.FirestoreCollections.TEAMS)
             .document(teamId)
             .collection(Constants.FirestoreCollections.TEAM_TASKS)
