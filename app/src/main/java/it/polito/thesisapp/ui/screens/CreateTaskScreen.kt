@@ -1,15 +1,18 @@
 package it.polito.thesisapp.ui.screens
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,8 +38,9 @@ import it.polito.thesisapp.viewmodel.CreateTaskViewModel
  */
 @Composable
 fun CreateTaskScreen(
+    teamId: String,
     navigationManager: NavigationManager = LocalNavigationManager.current,
-    viewModel: CreateTaskViewModel = hiltViewModel(viewModelStoreOwner = LocalActivity.current as ComponentActivity),
+    viewModel: CreateTaskViewModel = hiltViewModel(),
     afterTaskCreated: () -> Unit = {},
 ) {
     var taskName by remember { mutableStateOf("") }
@@ -47,43 +51,58 @@ fun CreateTaskScreen(
         navigationManager.setArgument(Constants.Navigation.Tags.TASK_DESCRIPTION, taskDescription)
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    if (taskName.isNotBlank()) {
+                        viewModel.submitTaskAndNavigate(
+                            teamId = teamId,
+                            taskName = taskName,
+                            taskDescription = taskDescription,
+                            onSuccess = afterTaskCreated
+                        )
+                    }
+                }
+            ) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Save Task")
+            }
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Text(
-                text = "Create New Task",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 24.dp)
-            )
-            OutlinedTextField(
-                value = taskName,
-                onValueChange = { taskName = it },
-                label = { Text("Task Name") },
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = taskDescription,
-                onValueChange = { taskDescription = it },
-                label = { Text("Task Description") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3,
-                maxLines = 5
-            )
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Create New Task",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+                OutlinedTextField(
+                    value = taskName,
+                    onValueChange = { taskName = it },
+                    label = { Text("Task Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = taskDescription,
+                    onValueChange = { taskDescription = it },
+                    label = { Text("Task Description") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
     LaunchedEffect(Unit) {
-        viewModel.taskCreated.collect { success ->
-            if (success) {
-                afterTaskCreated()
-            }
+        viewModel.taskCreated.collect {
+            afterTaskCreated()
         }
     }
 }

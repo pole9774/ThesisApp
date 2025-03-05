@@ -56,64 +56,17 @@ sealed class Screen(val route: String, val icon: Int, val label: String) {
          */
         fun buildProfileRoute() = Constants.Navigation.Routes.PROFILE
 
+        /**
+         * Builds the route for the task screen with the specified team ID and task ID.
+         *
+         * @param teamId The ID of the team.
+         * @param taskId The ID of the task.
+         * @return The route string for the task screen.
+         */
         fun buildTaskRoute(teamId: String, taskId: String) =
             Constants.Navigation.Routes.TASK
                 .replace("{${Constants.Navigation.Params.TEAM_ID}}", teamId)
                 .replace("{${Constants.Navigation.Params.TASK_ID}}", taskId)
-
-        fun isTaskRoute(route: String?): Boolean {
-            return route?.startsWith(Constants.Navigation.Routes.TASK.substringBefore("{")) == true
-        }
-
-        /**
-         * Checks if a route is the home route.
-         *
-         * @param route The route to check.
-         * @return True if the route is the home route, false otherwise.
-         */
-        fun isHomeRoute(route: String?): Boolean {
-            return route == Constants.Navigation.Routes.HOME
-        }
-
-        /**
-         * Checks if a route is a team route.
-         *
-         * @param route The route to check.
-         * @return True if the route is a team route, false otherwise.
-         */
-        fun isTeamRoute(route: String?): Boolean {
-            return route?.startsWith(Constants.Navigation.Routes.TEAM.substringBefore("{")) == true
-        }
-
-        /**
-         * Checks if a route is the create team route.
-         *
-         * @param route The route to check.
-         * @return True if the route is the create team route, false otherwise.
-         */
-        fun isCreateTeamRoute(route: String?): Boolean {
-            return route?.startsWith(Constants.Navigation.Routes.CREATE_TEAM) == true
-        }
-
-        /**
-         * Checks if a route is a create task route.
-         *
-         * @param route The route to check.
-         * @return True if the route is a create task route, false otherwise.
-         */
-        fun isCreateTaskRoute(route: String?): Boolean {
-            return route?.startsWith(Constants.Navigation.Routes.CREATE_TASK.substringBefore("{")) == true
-        }
-
-        /**
-         * Checks if a route is the profile route.
-         *
-         * @param route The route to check.
-         * @return True if the route is the profile route, false otherwise.
-         */
-        fun isProfileRoute(route: String?): Boolean {
-            return route == Constants.Navigation.Routes.PROFILE
-        }
 
         /**
          * List of screens to be displayed in the bottom navigation bar.

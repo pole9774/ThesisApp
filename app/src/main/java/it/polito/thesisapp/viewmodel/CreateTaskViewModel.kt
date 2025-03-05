@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.thesisapp.repository.TeamRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,9 +20,9 @@ class CreateTaskViewModel @Inject constructor(
     private val teamRepository: TeamRepository
 ) : ViewModel() {
 
-    // StateFlow to track if a task has been created
-    private val _taskCreated = MutableStateFlow(false)
-    val taskCreated: StateFlow<Boolean> = _taskCreated
+    // MutableSharedFlow to emit events when a task is created.
+    private val _taskCreated = MutableSharedFlow<Unit>()
+    val taskCreated = _taskCreated
 
     // StateFlow to hold the team ID
     private val _teamId = MutableStateFlow<String?>(null)
@@ -48,10 +49,9 @@ class CreateTaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 teamRepository.createTask(teamId, taskName, taskDescription)
-                _taskCreated.value = true
+                _taskCreated.emit(Unit)
                 onSuccess()
-            } catch (e: Exception) {
-                _taskCreated.value = false
+            } catch (_: Exception) {
             }
         }
     }

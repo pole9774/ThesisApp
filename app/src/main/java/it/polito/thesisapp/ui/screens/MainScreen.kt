@@ -4,12 +4,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.navigation.Screen
@@ -20,28 +17,14 @@ import it.polito.thesisapp.navigation.teamGraph
 import it.polito.thesisapp.ui.LocalNavController
 import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.AppBottomBar
-import it.polito.thesisapp.ui.components.MainFab
-import it.polito.thesisapp.viewmodel.CreateTaskViewModel
-import it.polito.thesisapp.viewmodel.CreateTeamViewModel
-import it.polito.thesisapp.viewmodel.MainScreenViewModel
 
 /**
  * Main screen composable function that sets up the navigation and UI components.
- *
- * @param viewModel The ViewModel for the main screen.
- * @param createTeamViewModel The ViewModel for creating a team.
- * @param createTaskViewModel The ViewModel for creating a task.
  */
 @Composable
-fun MainScreen(
-    viewModel: MainScreenViewModel = hiltViewModel(),
-    createTeamViewModel: CreateTeamViewModel = hiltViewModel(),
-    createTaskViewModel: CreateTaskViewModel = hiltViewModel()
-) {
+fun MainScreen() {
     val navController = rememberNavController()
     val navigationManager = remember { NavigationManager(navController) }
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = currentBackStackEntry?.destination?.route
 
     CompositionLocalProvider(
         LocalNavController provides navController,
@@ -49,23 +32,6 @@ fun MainScreen(
     ) {
         Scaffold(
             bottomBar = { AppBottomBar(navigationManager) },
-            floatingActionButton = {
-                MainFab(
-                    currentRoute = currentRoute,
-                    onFabClick = {
-                        viewModel.handleFabAction(
-                            navigationManager = navigationManager,
-                            currentRoute = currentRoute,
-                            createTeamAction = { name, description, onSuccess ->
-                                createTeamViewModel.submitTeamAndNavigate(name, description, onSuccess)
-                            },
-                            createTaskAction = { teamId, name, description, onSuccess ->
-                                createTaskViewModel.submitTaskAndNavigate(teamId, name, description, onSuccess)
-                            }
-                        )
-                    }
-                )
-            }
         ) { paddingValues ->
             NavHost(
                 navController = navController,

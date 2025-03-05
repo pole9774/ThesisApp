@@ -16,13 +16,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import it.polito.thesisapp.R
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
+import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
+import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.TeamViewModel
 
@@ -60,6 +65,8 @@ fun TeamScreen(
     val sortedTasks by viewModel.sortedTasks.collectAsState()
     val selectedFilters by viewModel.selectedStatusFilters.collectAsState() // Get selected filters
     val lazyListState = rememberLazyListState()
+    val navigationManager = LocalNavigationManager.current
+
 
     LaunchedEffect(teamId) {
         viewModel.loadTeam(teamId)
@@ -69,87 +76,104 @@ fun TeamScreen(
         lazyListState.animateScrollToItem(0)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (isLoading) {
-            LoadingIndicator()
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navigationManager.navigate(NavigationEvent.NavigateToCreateTask(teamId = teamId)) }
             ) {
-                team?.let { currentTeam ->
-                    Text(
-                        text = currentTeam.name,
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-
-                    Text(
-                        text = currentTeam.members.size.toString() + " members",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.align(Alignment.End)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    HorizontalDivider()
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Tasks (" + sortedTasks.size + ")",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    IconButton(onClick = { viewModel.toggleSortMode() }) {
-                        Icon(
-                            painter = when (sortMode) {
-                                TeamViewModel.TaskSortMode.DATE_DESC -> painterResource(R.drawable.sort_24)
-                                TeamViewModel.TaskSortMode.NAME_ASC -> painterResource(R.drawable.arrow_upward_24)
-                                TeamViewModel.TaskSortMode.NAME_DESC -> painterResource(R.drawable.arrow_downward_24)
-                            },
-                            contentDescription = "Sort tasks",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-
-                // Add the FilterChipRow here
-                FilterChipRow(
-                    selectedFilters = selectedFilters,
-                    onFilterToggle = { viewModel.toggleStatusFilter(it) }
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Default.Add,
+                    contentDescription = "Create Task"
                 )
+            }
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    team?.let { currentTeam ->
+                        Text(
+                            text = currentTeam.name,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
 
-                if (sortedTasks.isEmpty()) {
-                    Text(
-                        text = "No tasks yet",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                } else {
-                    LazyColumn(
-                        state = lazyListState,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        Text(
+                            text = currentTeam.members.size.toString() + " members",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        items(
-                            items = sortedTasks,
-                            key = { task -> task.id }
-                        ) { task ->
-                            TaskCard(
-                                task = task,
-                                teamId = teamId,
-                                modifier = Modifier.animateItem(
-                                    fadeInSpec = null, fadeOutSpec = null, placementSpec = tween(
-                                        durationMillis = 300,
-                                        easing = FastOutSlowInEasing
-                                    )
-                                ),
-                                onTaskClick = onNavigateToTask
+                        Text(
+                            text = "Tasks (" + sortedTasks.size + ")",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+
+                        IconButton(onClick = { viewModel.toggleSortMode() }) {
+                            Icon(
+                                painter = when (sortMode) {
+                                    TeamViewModel.TaskSortMode.DATE_DESC -> painterResource(R.drawable.sort_24)
+                                    TeamViewModel.TaskSortMode.NAME_ASC -> painterResource(R.drawable.arrow_upward_24)
+                                    TeamViewModel.TaskSortMode.NAME_DESC -> painterResource(R.drawable.arrow_downward_24)
+                                },
+                                contentDescription = "Sort tasks",
+                                tint = MaterialTheme.colorScheme.primary
                             )
+                        }
+                    }
+
+                    // Add the FilterChipRow here
+                    FilterChipRow(
+                        selectedFilters = selectedFilters,
+                        onFilterToggle = { viewModel.toggleStatusFilter(it) }
+                    )
+
+                    if (sortedTasks.isEmpty()) {
+                        Text(
+                            text = "No tasks yet",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    } else {
+                        LazyColumn(
+                            state = lazyListState,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(
+                                items = sortedTasks,
+                                key = { task -> task.id }
+                            ) { task ->
+                                TaskCard(
+                                    task = task,
+                                    teamId = teamId,
+                                    modifier = Modifier.animateItem(
+                                        fadeInSpec = null, fadeOutSpec = null, placementSpec = tween(
+                                            durationMillis = 300,
+                                            easing = FastOutSlowInEasing
+                                        )
+                                    ),
+                                    onTaskClick = onNavigateToTask
+                                )
+                            }
                         }
                     }
                 }

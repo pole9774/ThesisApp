@@ -79,6 +79,7 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
         val teamId = backStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
         CreateTaskScreen(
+            teamId = teamId,
             afterTaskCreated = {
                 navigationManager.navigate(
                     NavigationEvent.NavigateToTeamAfterTaskCreation(

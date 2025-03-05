@@ -17,11 +17,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +44,8 @@ import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.model.Team
+import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
+import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.LoadingIndicator
 import it.polito.thesisapp.viewmodel.HomeViewModel
 
@@ -57,6 +63,7 @@ fun HomeScreen(
     onNavigateToTeam: (String) -> Unit,
     onNavigateToTask: (String, String) -> Unit
 ) {
+    val navigationManager = LocalNavigationManager.current
     val profile by viewModel.profile.collectAsState()
     val teams by viewModel.teams.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -71,27 +78,46 @@ fun HomeScreen(
         viewModel.selectTeam(pagerState.currentPage)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (isLoading) {
-            LoadingIndicator()
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navigationManager.navigate(NavigationEvent.NavigateToCreateTeam)
+                }
             ) {
-                WelcomeSection(profile)
-                TeamSection(
-                    teams,
-                    pagerState,
-                    onTeamClick = onNavigateToTeam
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create Team"
                 )
-                HorizontalDivider()
-                TasksSection(
-                    viewModel = viewModel,
-                    onNavigateToTask = onNavigateToTask
-                )
+            }
+        }
+    ) { paddingValues: PaddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    WelcomeSection(profile)
+                    TeamSection(
+                        teams,
+                        pagerState,
+                        onTeamClick = onNavigateToTeam
+                    )
+                    HorizontalDivider()
+                    TasksSection(
+                        viewModel = viewModel,
+                        onNavigateToTask = onNavigateToTask
+                    )
+                }
             }
         }
     }

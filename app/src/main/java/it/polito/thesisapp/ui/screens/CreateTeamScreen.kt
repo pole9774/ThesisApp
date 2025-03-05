@@ -1,7 +1,5 @@
 package it.polito.thesisapp.ui.screens
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,10 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,7 +49,7 @@ import it.polito.thesisapp.viewmodel.CreateTeamViewModel
 @Composable
 fun CreateTeamScreen(
     navigationManager: NavigationManager = LocalNavigationManager.current,
-    viewModel: CreateTeamViewModel = hiltViewModel(viewModelStoreOwner = LocalActivity.current as ComponentActivity),
+    viewModel: CreateTeamViewModel = hiltViewModel(),
     afterTeamCreated: () -> Unit = {},
 ) {
     var teamName by remember { mutableStateOf("") }
@@ -65,83 +67,96 @@ fun CreateTeamScreen(
         navigationManager.setArgument(Constants.Navigation.Tags.TEAM_DESCRIPTION, teamDescription)
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        if (isLoading) {
-            LoadingIndicator()
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    if (teamName.isNotBlank()) {
+                        viewModel.submitTeamAndNavigate(
+                            teamName = teamName,
+                            teamDescription = teamDescription,
+                            onSuccess = afterTeamCreated
+                        )
+                    }
+                }
             ) {
-                item {
-                    Text(
-                        text = "Create New Team",
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
-                }
-
-                item {
-                    OutlinedTextField(
-                        value = teamName,
-                        onValueChange = { teamName = it },
-                        label = { Text("Team Name") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Words,
-                            autoCorrectEnabled = false,
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Save Team")
+            }
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues)
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        Text(
+                            text = "Create New Team",
+                            style = MaterialTheme.typography.headlineMedium,
+                            modifier = Modifier.padding(bottom = 24.dp)
                         )
-                    )
-                }
-
-                item {
-                    OutlinedTextField(
-                        value = teamDescription,
-                        onValueChange = { teamDescription = it },
-                        label = { Text("Team Description") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 4,
-                        maxLines = 7,
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Sentences,
-                            autoCorrectEnabled = true
+                    }
+                    item {
+                        OutlinedTextField(
+                            value = teamName,
+                            onValueChange = { teamName = it },
+                            label = { Text("Team Name") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Words,
+                                autoCorrectEnabled = false
+                            )
                         )
-                    )
-                }
-
-                item {
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    Text(
-                        text = "Select Team Members",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-
-                items(allProfiles) { profile ->
-                    ProfileCheckboxItem(
-                        profile = profile,
-                        isSelected = profile.id in selectedProfileIds,
-                        isCurrentUser = profile.id == Constants.User.USER_ID,
-                        onSelectionChanged = { selected ->
-                            viewModel.toggleProfileSelection(profile.id, selected)
-                        }
-                    )
+                    }
+                    item {
+                        OutlinedTextField(
+                            value = teamDescription,
+                            onValueChange = { teamDescription = it },
+                            label = { Text("Team Description") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 4,
+                            maxLines = 7,
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrectEnabled = true
+                            )
+                        )
+                    }
+                    item {
+                        // Divider and title for members selection.
+                        Text(
+                            text = "Select Team Members",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+                    items(allProfiles) { profile ->
+                        ProfileCheckboxItem(
+                            profile = profile,
+                            isSelected = profile.id in selectedProfileIds,
+                            isCurrentUser = profile.id == Constants.User.USER_ID,
+                            onSelectionChanged = { selected ->
+                                viewModel.toggleProfileSelection(profile.id, selected)
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 
     LaunchedEffect(Unit) {
-        viewModel.teamCreated.collect { success ->
-            if (success) {
-                afterTeamCreated()
-            }
+        viewModel.teamCreated.collect {
+            afterTeamCreated()
         }
     }
 }

@@ -7,6 +7,7 @@ import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.repository.ProfileRepository
 import it.polito.thesisapp.repository.TeamRepository
 import it.polito.thesisapp.utils.Constants
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,8 +24,8 @@ class CreateTeamViewModel @Inject constructor(
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
 
-    // StateFlow to track if a team has been created
-    private val _teamCreated = MutableStateFlow(false)
+    // MutableSharedFlow to emit events when a team is created.
+    private val _teamCreated = MutableSharedFlow<Unit>()
     val teamCreated = _teamCreated
 
     // StateFlow to hold all profiles
@@ -92,10 +93,9 @@ class CreateTeamViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 teamRepository.createTeam(teamName, teamDescription, _selectedProfileIds.value)
-                _teamCreated.value = true
+                _teamCreated.emit(Unit)
                 onSuccess()
-            } catch (e: Exception) {
-                _teamCreated.value = false
+            } catch (_: Exception) {
             }
         }
     }
