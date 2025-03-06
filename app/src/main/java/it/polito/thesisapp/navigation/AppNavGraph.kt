@@ -1,5 +1,7 @@
 package it.polito.thesisapp.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -23,7 +25,31 @@ fun NavGraphBuilder.homeGraph(
     navigationManager: NavigationManager,
 ) {
     composable(
-        route = Screen.buildHomeRoute()
+        route = Screen.buildHomeRoute(),
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        }
     ) {
         HomeScreen(
             userId = Constants.User.USER_ID,
@@ -36,7 +62,31 @@ fun NavGraphBuilder.homeGraph(
         )
     }
     composable(
-        route = Screen.buildCreateTeamRoute()
+        route = Screen.buildCreateTeamRoute(),
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        }
     ) {
         CreateTeamScreen(
             navigationManager = navigationManager,
@@ -58,7 +108,31 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
         route = Constants.Navigation.Routes.TEAM,
         arguments = listOf(
             navArgument(Constants.Navigation.Params.TEAM_ID) { type = NavType.StringType }
-        )
+        ),
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        }
     ) { backStackEntry ->
         val teamId = backStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
@@ -74,7 +148,31 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
         route = Constants.Navigation.Routes.CREATE_TASK,
         arguments = listOf(navArgument(Constants.Navigation.Params.TEAM_ID) {
             type = NavType.StringType
-        })
+        }),
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        }
     ) { backStackEntry ->
         val teamId = backStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID)
         requireNotNull(teamId) { "teamId parameter wasn't found" }
@@ -99,7 +197,31 @@ fun NavGraphBuilder.teamGraph(navigationManager: NavigationManager) {
  */
 fun NavGraphBuilder.profileGraph(navigationManager: NavigationManager) {
     composable(
-        route = Screen.buildProfileRoute()
+        route = Screen.buildProfileRoute(),
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        }
     ) {
         ProfileScreen(userId = Constants.User.USER_ID)
     }
@@ -117,7 +239,31 @@ fun NavGraphBuilder.taskGraph(navigationManager: NavigationManager) {
         arguments = listOf(
             navArgument(Constants.Navigation.Params.TEAM_ID) { type = NavType.StringType },
             navArgument(Constants.Navigation.Params.TASK_ID) { type = NavType.StringType }
-        )
+        ),
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(300)
+            )
+        }
     ) { navBackStackEntry ->
         val teamId =
             navBackStackEntry.arguments?.getString(Constants.Navigation.Params.TEAM_ID) ?: ""
