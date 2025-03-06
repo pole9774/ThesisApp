@@ -1,6 +1,7 @@
 package it.polito.thesisapp.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -31,6 +32,7 @@ fun ScaffoldWithFab(
                 )
             }
         },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         content = content
     )
 }
