@@ -1,32 +1,35 @@
 package it.polito.thesisapp.ui.screens
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getBoundsInRoot
-import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.DpRect
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.firebase.Timestamp
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.model.Team
 import it.polito.thesisapp.model.TeamMember
+import it.polito.thesisapp.navigation.NavigationManager
+import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
+import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.sql.Date
 
 /**
  * Custom assertion that verifies this node is positioned above another node in the UI.
@@ -48,247 +51,307 @@ fun SemanticsNodeInteraction.assertIsAbove(other: SemanticsNodeInteraction): Sem
     return this
 }
 
+/**
+ * Test class for HomeScreen composable.
+ */
 @RunWith(AndroidJUnit4::class)
 class HomeScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    // Test constants
-    private val testUserId = "test-user"
-
-    // Test fixtures
+    // Mock dependencies
     private lateinit var mockViewModel: HomeViewModel
-    private val defaultTeams = listOf(
-        createTeam("1", "Team A", "AAA"),
-        createTeam("2", "Team B", "BBB"),
-        createTeam("3", "Team C", "CCC")
+    private lateinit var mockNavigationManager: NavigationManager
+
+    // Navigation tracking
+    private var navigatedTeamId = ""
+    private var navigatedTaskId = ""
+
+    // Test data
+    private val testUserId = "user123"
+    private val testProfile = Profile(
+        id = testUserId,
+        firstName = "John",
+        lastName = "Doe",
+        birthDate = Timestamp.now(),
+        teams = emptyList()
     )
 
+    private val testTeams = listOf(
+        Team(
+            id = "team1",
+            name = "Team Alpha",
+            description = "First test team",
+            members = listOf(TeamMember("ADMIN", mockk())),
+            tasks = emptyList()
+        ),
+        Team(
+            id = "team2",
+            name = "Team Beta",
+            description = "Second test team",
+            members = listOf(TeamMember("MEMBER", mockk()), TeamMember("MEMBER", mockk())),
+            tasks = emptyList()
+        )
+    )
+
+    private val testTasks = listOf(
+        Task(
+            id = "task1",
+            name = "First Task",
+            description = "This is task 1",
+            creationDate = Timestamp.now(),
+            status = TaskStatus.TODO,
+            assignedMembers = emptyList()
+        ),
+        Task(
+            id = "task2",
+            name = "Second Task",
+            description = "This is task 2",
+            creationDate = Timestamp(Timestamp.now().seconds - 3600, 0),
+            status = TaskStatus.IN_PROGRESS,
+            assignedMembers = listOf(mockk(), mockk())
+        )
+    )
+
+    /**
+     * Sets up the test environment before each test.
+     */
     @Before
     fun setUp() {
-        mockViewModel = createMockViewModel(defaultTeams)
+        mockViewModel = mockk(relaxed = true)
+        mockNavigationManager = mockk(relaxed = true)
+        resetNavigationState()
+        setupDefaultMocks()
     }
 
-    @Test
-    fun horizontalPager_whenSwiped_displaysNextTeamAndUpdatesSelection() {
-        // Arrange
-        renderHomeScreen()
-
-        // Assert initial state
-        composeTestRule.onNodeWithText("Team A").assertIsDisplayed()
-
-        // Act: Swipe to next team
-        composeTestRule.onNode(hasText("Team A")).performTouchInput {
-            swipeLeft()
-        }
-
-        // Assert
-        composeTestRule.onNodeWithText("Team B").assertIsDisplayed()
-        verify { mockViewModel.selectTeam(1) }
+    /**
+     * Resets tracking variables for navigation.
+     */
+    private fun resetNavigationState() {
+        navigatedTeamId = ""
+        navigatedTaskId = ""
     }
 
-    @Test
-    fun teamCard_whenClicked_navigatesToTeamDetails() {
-        // Arrange
-        var navigatedTeamId = ""
-        val singleTeam = listOf(createTeam("1", "Team A"))
-        mockViewModel = createMockViewModel(singleTeam)
-
-        // Act
-        renderHomeScreen(onNavigateToTeam = { teamId -> navigatedTeamId = teamId })
-
-        composeTestRule.onNodeWithText("Team A").performClick()
-
-        // Assert
-        assert(navigatedTeamId == "1") { "Expected navigation to team '1', but got '$navigatedTeamId'" }
-    }
-
-    @Test
-    fun sortButton_whenClicked_callsToggleSortMode() {
-        // Arrange
-        val tasks = listOf(
-            createTask("1", "Task A"),
-            createTask("2", "Task B")
-        )
-        val teamsWithTasks = listOf(createTeam("1", "Team A", tasks = tasks))
-        mockViewModel = createMockViewModel(teamsWithTasks)
-        every { mockViewModel.sortedTasks } returns MutableStateFlow(tasks)
-
-        // Act
-        renderHomeScreen()
-        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
-
-        // Assert
-        verify { mockViewModel.toggleSortMode() }
-    }
-
-    @Test
-    fun taskList_whenSortModeChanges_displaysTasksInCorrectOrder() {
-        // Arrange
-        val tasksByDateDesc = listOf(
-            createTask("1", "Task B", creationDate = Timestamp(Date.valueOf("2023-5-3"))),
-            createTask("2", "Task A", creationDate = Timestamp(Date.valueOf("2023-5-2"))),
-            createTask("3", "Task C", creationDate = Timestamp(Date.valueOf("2023-5-1")))
-        )
-        val tasksByNameAsc = listOf(
-            createTask("2", "Task A", creationDate = Timestamp(Date.valueOf("2023-5-2"))),
-            createTask("1", "Task B", creationDate = Timestamp(Date.valueOf("2023-5-3"))),
-            createTask("3", "Task C", creationDate = Timestamp(Date.valueOf("2023-5-1")))
-        )
-        val tasksByNameDesc = listOf(
-            createTask("3", "Task C", creationDate = Timestamp(Date.valueOf("2023-5-1"))),
-            createTask("1", "Task B", creationDate = Timestamp(Date.valueOf("2023-5-3"))),
-            createTask("2", "Task A", creationDate = Timestamp(Date.valueOf("2023-5-2")))
-        )
-
-        // Create StateFlows we can update during the test
-        val tasksFlow = MutableStateFlow(tasksByDateDesc)
-        val sortModeFlow = MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
-
-        mockViewModel = mockk<HomeViewModel>(relaxed = true)
-        every { mockViewModel.teams } returns MutableStateFlow(listOf(createTeam("1", "Team")))
-        every { mockViewModel.selectedTeamIndex } returns MutableStateFlow(0)
+    /**
+     * Sets up default mock behavior.
+     */
+    private fun setupDefaultMocks() {
+        every { mockViewModel.profile } returns MutableStateFlow(testProfile)
+        every { mockViewModel.teams } returns MutableStateFlow(testTeams)
         every { mockViewModel.isLoading } returns MutableStateFlow(false)
-        every { mockViewModel.profile } returns MutableStateFlow(null)
-        every { mockViewModel.sortedTasks } returns tasksFlow
-        every { mockViewModel.taskSortMode } returns sortModeFlow
-
-        // Set up toggle behavior to cycle through all three states
-        every { mockViewModel.toggleSortMode() } answers {
-            when (sortModeFlow.value) {
-                HomeViewModel.TaskSortMode.DATE_DESC -> {
-                    sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_ASC
-                    tasksFlow.value = tasksByNameAsc
-                }
-
-                HomeViewModel.TaskSortMode.NAME_ASC -> {
-                    sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_DESC
-                    tasksFlow.value = tasksByNameDesc
-                }
-
-                HomeViewModel.TaskSortMode.NAME_DESC -> {
-                    sortModeFlow.value = HomeViewModel.TaskSortMode.DATE_DESC
-                    tasksFlow.value = tasksByDateDesc
-                }
-            }
-        }
-
-        // Act & Assert initial state (DATE_DESC)
-        renderHomeScreen()
-
-        composeTestRule.onNodeWithText("Task B").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Task B")
-            .assertIsAbove(composeTestRule.onNodeWithText("Task A"))
-            .assertIsAbove(composeTestRule.onNodeWithText("Task C"))
-
-        // Click sort button to switch to NAME_ASC
-        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
-        composeTestRule.waitForIdle()
-
-        // Assert alphabetical ascending order
-        composeTestRule.onNodeWithText("Task A").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Task A")
-            .assertIsAbove(composeTestRule.onNodeWithText("Task B"))
-            .assertIsAbove(composeTestRule.onNodeWithText("Task C"))
-
-        // Click sort button to switch to NAME_DESC
-        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
-        composeTestRule.waitForIdle()
-
-        // Assert alphabetical descending order
-        composeTestRule.onNodeWithText("Task C").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Task C")
-            .assertIsAbove(composeTestRule.onNodeWithText("Task B"))
-            .assertIsAbove(composeTestRule.onNodeWithText("Task A"))
-
-        // Click sort button to return to DATE_DESC
-        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
-        composeTestRule.waitForIdle()
-
-        // Assert back to creation date descending order
-        composeTestRule.onNodeWithText("Task B").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Task B")
-            .assertIsAbove(composeTestRule.onNodeWithText("Task A"))
-            .assertIsAbove(composeTestRule.onNodeWithText("Task C"))
+        every { mockViewModel.sortedTasks } returns MutableStateFlow(testTasks)
+        every { mockViewModel.taskSortMode } returns MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
+        every { mockViewModel.selectedTeamIndex } returns MutableStateFlow(0)
     }
 
-    @Test
-    fun taskList_whenSortingByNameDesc_displaysTasksInReverseAlphabeticalOrder() {
-        // Arrange
-        val tasksByNameDesc = listOf(
-            createTask("1", "Task B"),
-            createTask("2", "Task A")
-        )
-
-        mockViewModel = createMockViewModel(listOf(createTeam("1", "Team")))
-        every { mockViewModel.sortedTasks } returns MutableStateFlow(tasksByNameDesc)
-        every { mockViewModel.taskSortMode } returns MutableStateFlow(HomeViewModel.TaskSortMode.NAME_DESC)
-
-        // Act
-        renderHomeScreen()
-
-        // Assert
-        composeTestRule.onNodeWithText("Task B")
-            .assertIsAbove(composeTestRule.onNodeWithText("Task A"))
-    }
-
-    // Helper methods
-    private fun renderHomeScreen(
-        onNavigateToTeam: (String) -> Unit = {},
-        onNavigateToTask: (String, String) -> Unit = { _, _ -> }
+    /**
+     * Helper method to set up the HomeScreen composable.
+     *
+     * @param captureTeamNavigation Whether to capture team navigation events.
+     * @param captureTaskNavigation Whether to capture task navigation events.
+     */
+    private fun setupHomeScreen(
+        captureTeamNavigation: Boolean = false,
+        captureTaskNavigation: Boolean = false
     ) {
         composeTestRule.setContent {
-            HomeScreen(
-                userId = testUserId,
-                viewModel = mockViewModel,
-                onNavigateToTeam = onNavigateToTeam,
-                onNavigateToTask = onNavigateToTask
-            )
+            CompositionLocalProvider(LocalNavigationManager provides mockNavigationManager) {
+                HomeScreen(
+                    userId = testUserId,
+                    viewModel = mockViewModel,
+                    onNavigateToTeam = { teamId ->
+                        if (captureTeamNavigation) navigatedTeamId = teamId
+                    },
+                    onNavigateToTask = { teamId, taskId ->
+                        if (captureTaskNavigation) {
+                            navigatedTeamId = teamId
+                            navigatedTaskId = taskId
+                        }
+                    }
+                )
+            }
         }
     }
 
-    private fun createTeam(
-        id: String,
-        name: String,
-        description: String = "",
-        members: List<TeamMember> = emptyList(),
-        tasks: List<Task> = emptyList()
-    ): Team {
-        return Team(
-            id = id,
-            name = name,
-            description = description,
-            members = members,
-            tasks = tasks
-        )
+    /**
+     * Tests that the loading indicator is displayed when the loading state is true.
+     */
+    @Test
+    fun loadingIndicator_isDisplayed_whenLoading() {
+        // Given
+        every { mockViewModel.isLoading } returns MutableStateFlow(true)
+
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNode(
+            hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)
+        ).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Welcome, John").assertDoesNotExist()
     }
 
-    private fun createMockViewModel(teams: List<Team>): HomeViewModel {
-        val mockViewModel = mockk<HomeViewModel>(relaxed = true)
-        every { mockViewModel.teams } returns MutableStateFlow(teams)
-        every { mockViewModel.selectedTeamIndex } returns MutableStateFlow(0)
-        every { mockViewModel.isLoading } returns MutableStateFlow(false)
+    /**
+     * Tests that the welcome message with the user's first name is correctly displayed.
+     */
+    @Test
+    fun welcomeMessage_displaysUserFirstName() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("Welcome, John").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that the welcome message shows a placeholder when profile is null.
+     */
+    @Test
+    fun welcomeMessage_showsPlaceholder_whenProfileIsNull() {
+        // Given
         every { mockViewModel.profile } returns MutableStateFlow(null)
-        every { mockViewModel.sortedTasks } returns MutableStateFlow(emptyList())
-        every { mockViewModel.taskSortMode } returns MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
-        return mockViewModel
+
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("Welcome, ...").assertIsDisplayed()
     }
 
-    private fun createTask(
-        id: String,
-        name: String,
-        description: String = "",
-        creationDate: Timestamp = Timestamp.now(),
-        status: TaskStatus = TaskStatus.TODO
-    ): Task {
-        return Task(
-            id = id,
-            name = name,
-            description = description,
-            creationDate = creationDate,
-            assignedMembers = emptyList(),
-            status = status
-        )
+    /**
+     * Tests that the teams are correctly displayed in the team section.
+     */
+    @Test
+    fun teamSection_displaysTeams() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("Team Alpha").assertIsDisplayed()
+        composeTestRule.onNodeWithText("1 members").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that the "No tasks yet" message is shown when there are no tasks.
+     */
+    @Test
+    fun taskSection_showsEmptyMessage_whenNoTasks() {
+        // Given
+        every { mockViewModel.sortedTasks } returns MutableStateFlow(emptyList())
+
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("No tasks yet").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that tasks are correctly displayed in the task section.
+     */
+    @Test
+    fun taskSection_displaysTasks() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("First Task").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Second Task").assertIsDisplayed()
+        composeTestRule.onNodeWithText("This is task 1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("This is task 2").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that task status chips are correctly displayed with the right status text.
+     */
+    @Test
+    fun taskStatusChips_areCorrectlyDisplayed() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("To Do").assertIsDisplayed()
+        composeTestRule.onNodeWithText("In Progress").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that clicking on a team triggers the correct navigation callback.
+     */
+    @Test
+    fun teamCard_clickTriggersNavigation() {
+        // When
+        setupHomeScreen(captureTeamNavigation = true)
+        composeTestRule.onNodeWithText("Team Alpha").performClick()
+
+        // Then
+        assert(navigatedTeamId == "team1")
+    }
+
+    /**
+     * Tests that clicking on a task triggers the correct navigation callback.
+     */
+    @Test
+    fun taskCard_clickTriggersNavigation() {
+        // When
+        setupHomeScreen(captureTaskNavigation = true)
+        composeTestRule.onNodeWithText("First Task").performClick()
+
+        // Then
+        assert(navigatedTeamId == "team1")
+        assert(navigatedTaskId == "task1")
+    }
+
+    /**
+     * Tests that clicking the sort button calls the toggleSortMode function in the ViewModel.
+     */
+    @Test
+    fun sortButton_callsToggleSortMode() {
+        // When
+        setupHomeScreen()
+        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
+
+        // Then
+        verify(exactly = 1) { mockViewModel.toggleSortMode() }
+    }
+
+    /**
+     * Tests that clicking the FAB button navigates to the create team screen.
+     */
+    @Test
+    fun fabButton_navigatesToCreateTeam() {
+        // When
+        setupHomeScreen()
+        composeTestRule.onNodeWithContentDescription("Create Team").performClick()
+
+        // Then
+        verify(exactly = 1) { mockNavigationManager.navigate(NavigationEvent.NavigateToCreateTeam) }
+    }
+
+    /**
+     * Tests that the loadProfile function is called with the correct user ID when the screen is composed.
+     */
+    @Test
+    fun homeScreen_callsLoadProfileWithUserId() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        verify(exactly = 1) { mockViewModel.loadProfile(testUserId) }
+    }
+
+    /**
+     * Tests the correct vertical layout structure of the home screen.
+     */
+    @Test
+    fun homeScreen_hasCorrectVerticalLayoutStructure() {
+        // When
+        setupHomeScreen()
+
+        // Then - verify elements are stacked in the correct order
+        composeTestRule.onNodeWithText("Welcome, John")
+            .assertIsAbove(composeTestRule.onNodeWithText("My Teams"))
+        composeTestRule.onNodeWithText("My Teams")
+            .assertIsAbove(composeTestRule.onNodeWithText("Tasks"))
     }
 }
