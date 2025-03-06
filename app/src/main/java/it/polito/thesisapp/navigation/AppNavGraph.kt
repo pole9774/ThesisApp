@@ -2,6 +2,8 @@ package it.polito.thesisapp.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -27,16 +29,40 @@ fun NavGraphBuilder.homeGraph(
     composable(
         route = Screen.buildHomeRoute(),
         enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(300)
-            )
+            when (initialState.destination.route) {
+                Screen.buildProfileRoute() -> {
+                    fadeIn(animationSpec = tween(300))
+                }
+
+                Screen.buildHomeRoute() -> {
+                    null
+                }
+
+                else -> {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(300)
+                    )
+                }
+            }
         },
         exitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(300)
-            )
+            when (targetState.destination.route) {
+                Screen.buildProfileRoute() -> {
+                    fadeOut(animationSpec = tween(300))
+                }
+
+                Screen.buildHomeRoute() -> {
+                    null
+                }
+
+                else -> {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(300)
+                    )
+                }
+            }
         },
         popEnterTransition = {
             slideIntoContainer(
@@ -199,16 +225,40 @@ fun NavGraphBuilder.profileGraph(navigationManager: NavigationManager) {
     composable(
         route = Screen.buildProfileRoute(),
         enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(300)
-            )
+            when (initialState.destination.route) {
+                Screen.buildHomeRoute() -> {
+                    fadeIn(animationSpec = tween(300))
+                }
+
+                Screen.buildProfileRoute() -> {
+                    null
+                }
+
+                else -> {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(300)
+                    )
+                }
+            }
         },
         exitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(300)
-            )
+            when (targetState.destination.route) {
+                Screen.buildHomeRoute() -> {
+                    fadeOut(animationSpec = tween(300))
+                }
+
+                Screen.buildProfileRoute() -> {
+                    null
+                }
+
+                else -> {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(300)
+                    )
+                }
+            }
         },
         popEnterTransition = {
             slideIntoContainer(
