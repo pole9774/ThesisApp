@@ -16,16 +16,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +43,7 @@ import it.polito.thesisapp.model.TaskStatus
 import it.polito.thesisapp.navigation.NavigationManager.NavigationEvent
 import it.polito.thesisapp.ui.LocalNavigationManager
 import it.polito.thesisapp.ui.components.LoadingIndicator
+import it.polito.thesisapp.ui.components.ScaffoldWithFab
 import it.polito.thesisapp.viewmodel.TeamViewModel
 
 /**
@@ -76,16 +76,11 @@ fun TeamScreen(
         lazyListState.animateScrollToItem(0)
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navigationManager.navigate(NavigationEvent.NavigateToCreateTask(teamId = teamId)) }
-            ) {
-                Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.Add,
-                    contentDescription = "Create Task"
-                )
-            }
+    ScaffoldWithFab(
+        icon = Icons.Default.Add,
+        contentDescription = "Create Task",
+        onFabClick = {
+            navigationManager.navigate(NavigationEvent.NavigateToCreateTask(teamId = teamId))
         }
     ) { paddingValues ->
         Box(

@@ -8,11 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import it.polito.thesisapp.navigation.NavigationManager
 import it.polito.thesisapp.ui.LocalNavigationManager
+import it.polito.thesisapp.ui.components.ScaffoldWithFab
 import it.polito.thesisapp.utils.Constants
 import it.polito.thesisapp.viewmodel.CreateTaskViewModel
 
@@ -51,21 +49,17 @@ fun CreateTaskScreen(
         navigationManager.setArgument(Constants.Navigation.Tags.TASK_DESCRIPTION, taskDescription)
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (taskName.isNotBlank()) {
-                        viewModel.submitTaskAndNavigate(
-                            teamId = teamId,
-                            taskName = taskName,
-                            taskDescription = taskDescription,
-                            onSuccess = afterTaskCreated
-                        )
-                    }
-                }
-            ) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = "Save Task")
+    ScaffoldWithFab(
+        icon = Icons.Default.Check,
+        contentDescription = "Save Task",
+        onFabClick = {
+            if (taskName.isNotBlank()) {
+                viewModel.submitTaskAndNavigate(
+                    teamId = teamId,
+                    taskName = taskName,
+                    taskDescription = taskDescription,
+                    onSuccess = afterTaskCreated
+                )
             }
         }
     ) { paddingValues ->
@@ -100,6 +94,7 @@ fun CreateTaskScreen(
             }
         }
     }
+
     LaunchedEffect(Unit) {
         viewModel.taskCreated.collect {
             afterTaskCreated()
