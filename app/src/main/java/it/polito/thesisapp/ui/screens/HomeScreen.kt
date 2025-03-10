@@ -150,7 +150,7 @@ private fun TasksSection(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            IconButton(onClick = { viewModel.toggleSortMode() }) {
+            IconButton(onClick = { }) {
                 Icon(
                     painter = when (sortMode) {
                         HomeViewModel.TaskSortMode.DATE_DESC -> painterResource(R.drawable.sort_24)
