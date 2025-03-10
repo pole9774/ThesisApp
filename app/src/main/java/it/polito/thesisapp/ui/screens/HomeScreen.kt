@@ -21,8 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,10 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import it.polito.thesisapp.R
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
 import it.polito.thesisapp.model.TaskStatus
@@ -148,18 +144,6 @@ private fun TasksSection(
                 text = "Tasks",
                 style = MaterialTheme.typography.titleLarge
             )
-
-            IconButton(onClick = { viewModel.toggleSortMode() }) {
-                Icon(
-                    painter = when (sortMode) {
-                        HomeViewModel.TaskSortMode.DATE_DESC -> painterResource(R.drawable.sort_24)
-                        HomeViewModel.TaskSortMode.NAME_ASC -> painterResource(R.drawable.arrow_upward_24)
-                        HomeViewModel.TaskSortMode.NAME_DESC -> painterResource(R.drawable.arrow_downward_24)
-                    },
-                    contentDescription = "Sort tasks",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
         }
 
         if (sortedTasks.isEmpty()) {
