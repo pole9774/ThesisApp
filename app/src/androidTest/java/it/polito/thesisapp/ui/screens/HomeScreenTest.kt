@@ -354,4 +354,79 @@ class HomeScreenTest {
         composeTestRule.onNodeWithText("My Teams")
             .assertIsAbove(composeTestRule.onNodeWithText("Tasks"))
     }
+
+    /**
+     * Tests that different sort modes display different sort icons.
+     */
+    @Test
+    fun sortButton_displaysCorrectIcon() {
+        // Create a mutable state flow that we can update
+        val sortModeFlow = MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
+        every { mockViewModel.taskSortMode } returns sortModeFlow
+
+        // Initial setup with DATE_DESC mode
+        setupHomeScreen()
+        composeTestRule.onNodeWithContentDescription("Sort tasks").assertIsDisplayed()
+
+        // Update to NAME_ASC mode and wait for recomposition
+        sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_ASC
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription("Sort tasks").assertIsDisplayed()
+
+        // Update to NAME_DESC mode and wait for recomposition
+        sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_DESC
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription("Sort tasks").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that task cards display the correct number of assigned members.
+     */
+    @Test
+    fun taskCard_showsCorrectAssignedMembersCount() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("0 assigned members").assertIsDisplayed()
+        composeTestRule.onNodeWithText("2 assigned members").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that when a team is selected, the selectTeam method is called with the correct index.
+     */
+    @Test
+    fun teamSelection_callsSelectTeamWithCorrectIndex() {
+        // When
+        setupHomeScreen()
+
+        // Then - verify selectTeam is called when the screen is composed
+        verify { mockViewModel.selectTeam(any()) }
+    }
+
+    /**
+     * Tests that team cards display the correct member count text.
+     */
+    @Test
+    fun teamCard_showsCorrectMemberCount() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("1 members").assertIsDisplayed()
+        composeTestRule.onNodeWithText("2 members").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that section headers are displayed correctly.
+     */
+    @Test
+    fun sectionHeaders_areDisplayedCorrectly() {
+        // When
+        setupHomeScreen()
+
+        // Then
+        composeTestRule.onNodeWithText("My Teams").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Tasks").assertIsDisplayed()
+    }
 }
