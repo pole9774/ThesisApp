@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -157,6 +158,7 @@ private fun TasksSection(
                         HomeViewModel.TaskSortMode.NAME_DESC -> painterResource(R.drawable.arrow_downward_24)
                     },
                     contentDescription = "Sort tasks",
+                    modifier = Modifier.testTag("sort_icon_${sortMode.name.lowercase()}"),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

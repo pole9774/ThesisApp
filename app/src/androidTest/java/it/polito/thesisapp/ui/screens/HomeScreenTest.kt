@@ -8,6 +8,7 @@ import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.DpRect
@@ -364,19 +365,27 @@ class HomeScreenTest {
         val sortModeFlow = MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
         every { mockViewModel.taskSortMode } returns sortModeFlow
 
-        // Initial setup with DATE_DESC mode
+        // Set up the HomeScreen
         setupHomeScreen()
-        composeTestRule.onNodeWithContentDescription("Sort tasks").assertIsDisplayed()
 
-        // Update to NAME_ASC mode and wait for recomposition
+        // For DATE_DESC mode
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription("Sort tasks").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("sort_icon_date_desc", useUnmergedTree = true).assertExists().assertIsDisplayed()
+
+        // For NAME_ASC mode
         sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_ASC
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithContentDescription("Sort tasks").assertIsDisplayed()
+        // Allow time for recomposition
+        composeTestRule.mainClock.advanceTimeBy(300)
+        composeTestRule.onNodeWithTag("sort_icon_name_asc", useUnmergedTree = true).assertExists().assertIsDisplayed()
 
-        // Update to NAME_DESC mode and wait for recomposition
+        // For NAME_DESC mode
         sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_DESC
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithContentDescription("Sort tasks").assertIsDisplayed()
+        // Allow time for recomposition
+        composeTestRule.mainClock.advanceTimeBy(300)
+        composeTestRule.onNodeWithTag("sort_icon_name_desc", useUnmergedTree = true).assertExists().assertIsDisplayed()
     }
 
     /**
