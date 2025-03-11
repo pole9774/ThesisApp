@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,11 +32,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import it.polito.thesisapp.R
 import it.polito.thesisapp.model.Profile
 import it.polito.thesisapp.model.Task
@@ -151,15 +153,20 @@ private fun TasksSection(
             )
 
             IconButton(onClick = { viewModel.toggleSortMode() }) {
-                Icon(
-                    painter = when (sortMode) {
-                        HomeViewModel.TaskSortMode.DATE_DESC -> painterResource(R.drawable.sort_24)
-                        HomeViewModel.TaskSortMode.NAME_ASC -> painterResource(R.drawable.arrow_upward_24)
-                        HomeViewModel.TaskSortMode.NAME_DESC -> painterResource(R.drawable.arrow_downward_24)
-                    },
+                val iconRes = when (sortMode) {
+                    HomeViewModel.TaskSortMode.DATE_DESC -> R.drawable.sort_24
+                    HomeViewModel.TaskSortMode.NAME_ASC -> R.drawable.arrow_upward_24
+                    HomeViewModel.TaskSortMode.NAME_DESC -> R.drawable.arrow_downward_24
+                }
+
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(iconRes)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = "Sort tasks",
                     modifier = Modifier.testTag("sort_icon_${sortMode.name.lowercase()}"),
-                    tint = MaterialTheme.colorScheme.primary
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
             }
         }
