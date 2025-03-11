@@ -11,6 +11,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.DpRect
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.firebase.Timestamp
@@ -437,5 +439,182 @@ class HomeScreenTest {
         // Then
         composeTestRule.onNodeWithText("My Teams").assertIsDisplayed()
         composeTestRule.onNodeWithText("Tasks").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that swiping the team pager updates the selected team index.
+     */
+    @Test
+    fun teamPager_swipeUpdatesSelectedTeam() {
+        // Given
+        val selectedTeamIndexFlow = MutableStateFlow(0)
+        every { mockViewModel.selectedTeamIndex } returns selectedTeamIndexFlow
+
+        // When
+        setupHomeScreen()
+
+        // Then - verify first team is shown
+        composeTestRule.onNodeWithText("Team Alpha").assertIsDisplayed()
+
+        // When - simulate a swipe left to show the next team
+        composeTestRule.onNodeWithText("Team Alpha").performTouchInput {
+            swipeLeft(
+                startX = centerX + 200f,
+                endX = centerX - 200f,
+                durationMillis = 200
+            )
+        }
+
+        // Allow time for animations and recomposition
+        composeTestRule.mainClock.advanceTimeBy(500)
+
+        // Then - verify second team is shown and selectTeam was called with index 1
+        composeTestRule.onNodeWithText("Team Beta").assertIsDisplayed()
+        verify { mockViewModel.selectTeam(1) }
+    }
+
+    /**
+     * Tests that the pager displays the correct team when selectedTeamIndex changes.
+     */
+    @Test
+    fun teamPager_reflectsSelectedTeamIndex() {
+        // Create a mutable state flow that we can update
+        val selectedTeamIndexFlow = MutableStateFlow(0)
+        every { mockViewModel.selectedTeamIndex } returns selectedTeamIndexFlow
+
+        // Set up the HomeScreen with first team selected
+        setupHomeScreen()
+        composeTestRule.onNodeWithText("Team Alpha").assertIsDisplayed()
+
+        // Change the selected team index
+        selectedTeamIndexFlow.value = 1
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(500)
+
+        // Verify the second team is now displayed
+        composeTestRule.onNodeWithText("Team Beta").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that the pager displays the correct team's tasks when selectedTeamIndex changes.
+     */
+    @Test
+    fun teamPager_reflectsSelectedTeamTasks() {
+        // Create a mutable state flow that we can update
+        val selectedTeamIndexFlow = MutableStateFlow(0)
+        every { mockViewModel.selectedTeamIndex } returns selectedTeamIndexFlow
+
+        // Set up different tasks for different team indices
+        val team1Tasks = listOf(
+            Task(
+                id = "task1",
+                name = "Team 1 Task",
+                description = "Task for team 1",
+                creationDate = Timestamp.now(),
+                status = TaskStatus.TODO,
+                assignedMembers = emptyList()
+            )
+        )
+
+        val team2Tasks = listOf(
+            Task(
+                id = "task2",
+                name = "Team 2 Task",
+                description = "Task for team 2",
+                creationDate = Timestamp.now(),
+                status = TaskStatus.IN_PROGRESS,
+                assignedMembers = emptyList()
+            )
+        )
+
+        // Use a mutable flow for sortedTasks that we can update
+        val sortedTasksFlow = MutableStateFlow(team1Tasks)
+        every { mockViewModel.sortedTasks } returns sortedTasksFlow
+
+        // Set up the HomeScreen with first team selected
+        setupHomeScreen()
+
+        // Verify first team's task is shown
+        composeTestRule.onNodeWithText("Team 1 Task").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Team 2 Task").assertDoesNotExist()
+
+        // Change the selected team index and update tasks
+        selectedTeamIndexFlow.value = 1
+        sortedTasksFlow.value = team2Tasks
+
+        // Allow time for recomposition
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(500)
+
+        // Verify second team's task is now displayed
+        composeTestRule.onNodeWithText("Team 1 Task").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Team 2 Task").assertIsDisplayed()
+    }
+
+    /**
+     * Tests that tasks shown update correctly when the team changes due to swiping in the horizontal pager.
+     */
+    @Test
+    fun teamPager_swipeChangesDisplayedTasks() {
+        // Given - create different tasks for different teams
+        val team1Tasks = listOf(
+            Task(
+                id = "task1",
+                name = "Team Alpha Task",
+                description = "Task for Team Alpha",
+                creationDate = Timestamp.now(),
+                status = TaskStatus.TODO,
+                assignedMembers = emptyList()
+            )
+        )
+
+        val team2Tasks = listOf(
+            Task(
+                id = "task2",
+                name = "Team Beta Task",
+                description = "Task for Team Beta",
+                creationDate = Timestamp.now(),
+                status = TaskStatus.IN_PROGRESS,
+                assignedMembers = emptyList()
+            )
+        )
+
+        // Set up mutable flows for team index and tasks
+        val selectedTeamIndexFlow = MutableStateFlow(0)
+        val sortedTasksFlow = MutableStateFlow(team1Tasks)
+
+        every { mockViewModel.selectedTeamIndex } returns selectedTeamIndexFlow
+        every { mockViewModel.sortedTasks } returns sortedTasksFlow
+
+        // When - set up the home screen with the first team selected
+        setupHomeScreen()
+
+        // Then - verify the first team's task is displayed
+        composeTestRule.onNodeWithText("Team Alpha Task").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Team Beta Task").assertDoesNotExist()
+
+        // When - simulate a swipe to change to the next team
+        composeTestRule.onNodeWithText("Team Alpha").performTouchInput {
+            swipeLeft(
+                startX = centerX + 200f,
+                endX = centerX - 200f,
+                durationMillis = 200
+            )
+        }
+
+        // Then - verify that selectTeam(1) was called as a result of the swipe
+        verify { mockViewModel.selectTeam(1) }
+
+        // When - update the task list to reflect what the ViewModel would do
+        selectedTeamIndexFlow.value = 1
+        sortedTasksFlow.value = team2Tasks
+
+        // Give time for recomposition
+        composeTestRule.mainClock.advanceTimeBy(500)
+        composeTestRule.waitForIdle()
+
+        // Then - verify the second team's task is now displayed
+        composeTestRule.onNodeWithText("Team Alpha Task").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Team Beta Task").assertIsDisplayed()
     }
 }
