@@ -376,14 +376,14 @@ class HomeScreenTest {
         composeTestRule.onNodeWithTag("sort_icon_date_desc", useUnmergedTree = true).assertExists().assertIsDisplayed()
 
         // For NAME_ASC mode
-        sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_ASC
+        sortModeFlow.value = HomeViewModel.TaskSortMode.MEMBERS_ASC
         composeTestRule.waitForIdle()
         // Allow time for recomposition
         composeTestRule.mainClock.advanceTimeBy(300)
         composeTestRule.onNodeWithTag("sort_icon_name_asc", useUnmergedTree = true).assertExists().assertIsDisplayed()
 
         // For NAME_DESC mode
-        sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_DESC
+        sortModeFlow.value = HomeViewModel.TaskSortMode.MEMBERS_DESC
         composeTestRule.waitForIdle()
         // Allow time for recomposition
         composeTestRule.mainClock.advanceTimeBy(300)

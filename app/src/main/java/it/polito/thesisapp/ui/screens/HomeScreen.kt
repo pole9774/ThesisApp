@@ -146,7 +146,7 @@ private fun TasksSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Tasks",
+                text = "Activities",
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -154,10 +154,10 @@ private fun TasksSection(
                 Icon(
                     painter = when (sortMode) {
                         HomeViewModel.TaskSortMode.DATE_DESC -> painterResource(R.drawable.sort_24)
-                        HomeViewModel.TaskSortMode.NAME_ASC -> painterResource(R.drawable.arrow_upward_24)
-                        HomeViewModel.TaskSortMode.NAME_DESC -> painterResource(R.drawable.arrow_downward_24)
+                        HomeViewModel.TaskSortMode.MEMBERS_ASC -> painterResource(R.drawable.arrow_upward_24)
+                        HomeViewModel.TaskSortMode.MEMBERS_DESC -> painterResource(R.drawable.arrow_downward_24)
                     },
-                    contentDescription = "Sort tasks",
+                    contentDescription = "Sort activities",
                     modifier = Modifier.testTag("sort_icon_${sortMode.name.lowercase()}"),
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -166,7 +166,7 @@ private fun TasksSection(
 
         if (sortedTasks.isEmpty()) {
             Text(
-                text = "No tasks yet",
+                text = "No activities yet",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -287,7 +287,7 @@ private fun TeamSection(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "My Teams",
+            text = "My Squads",
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -353,7 +353,7 @@ private fun TeamCard(
 @Composable
 private fun WelcomeSection(profile: Profile?) {
     Text(
-        text = "Welcome, ${profile?.firstName ?: "..."}",
+        text = "Hello, ${profile?.firstName ?: "..."}",
         style = MaterialTheme.typography.headlineMedium
     )
 }

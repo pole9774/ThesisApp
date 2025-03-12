@@ -150,11 +150,9 @@ class TeamRepository {
             return
         }
 
-        // Initialize tasks map to maintain state across updates
         val tasksMap = mutableMapOf<String, Task>()
 
         if (tasksSnapshot?.documents.isNullOrEmpty()) {
-            // If there are no tasks, emit team with empty task list
             trySend(team.copy(members = members, tasks = emptyList()))
             return
         }
@@ -165,7 +163,6 @@ class TeamRepository {
                 data = taskDoc.data ?: emptyMap()
             )
 
-            // Set up snapshot listener for assigned members
             taskDoc.reference.collection(Constants.FirestoreCollections.TASK_ASSIGNED_MEMBERS)
                 .addSnapshotListener { assignedMembersSnapshot, assignedMembersError ->
                     if (assignedMembersError != null) {
@@ -173,13 +170,14 @@ class TeamRepository {
                         return@addSnapshotListener
                     }
 
-                    val assignedMembers = assignedMembersSnapshot?.documents
+                    // Get references to team members instead of profiles
+                    val assignedMemberRefs = assignedMembersSnapshot?.documents
                         ?.mapNotNull { it.get(Constants.FirestoreFields.AssignedMember.MEMBER_REF) as? DocumentReference }
                         ?: emptyList()
 
-                    tasksMap[task.id] = task.copy(assignedMembers = assignedMembers)
+                    // Use these team member references
+                    tasksMap[task.id] = task.copy(assignedMembers = assignedMemberRefs)
 
-                    // Emit updated team with current tasks
                     trySend(
                         team.copy(
                             members = members,

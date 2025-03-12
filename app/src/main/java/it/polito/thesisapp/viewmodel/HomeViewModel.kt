@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
     val isLoading = _isLoading
 
     // Enum class for task sort modes
-    enum class TaskSortMode { DATE_DESC, NAME_ASC, NAME_DESC }
+    enum class TaskSortMode { DATE_DESC, MEMBERS_ASC, MEMBERS_DESC }
 
     // StateFlow to hold the current task sort mode
     private val _taskSortMode = MutableStateFlow(TaskSortMode.DATE_DESC)
@@ -78,8 +78,8 @@ class HomeViewModel @Inject constructor(
     private fun sortTasks(tasks: List<Task>, mode: TaskSortMode): List<Task> {
         return when (mode) {
             TaskSortMode.DATE_DESC -> tasks.sortedByDescending { it.creationDate }
-            TaskSortMode.NAME_ASC -> tasks.sortedBy { it.name }
-            TaskSortMode.NAME_DESC -> tasks.sortedByDescending { it.name }
+            TaskSortMode.MEMBERS_ASC -> tasks.sortedBy { it.assignedMembers.size }
+            TaskSortMode.MEMBERS_DESC -> tasks.sortedByDescending { it.assignedMembers.size }
         }
     }
 
@@ -88,9 +88,9 @@ class HomeViewModel @Inject constructor(
      */
     fun toggleSortMode() {
         _taskSortMode.value = when (_taskSortMode.value) {
-            TaskSortMode.DATE_DESC -> TaskSortMode.NAME_ASC
-            TaskSortMode.NAME_ASC -> TaskSortMode.NAME_DESC
-            TaskSortMode.NAME_DESC -> TaskSortMode.DATE_DESC
+            TaskSortMode.DATE_DESC -> TaskSortMode.MEMBERS_ASC
+            TaskSortMode.MEMBERS_ASC -> TaskSortMode.MEMBERS_DESC
+            TaskSortMode.MEMBERS_DESC -> TaskSortMode.DATE_DESC
         }
     }
 
