@@ -398,7 +398,105 @@ class HomeScreenTest {
         // When
         setupHomeScreen()
 
-        // Then
+        // Then@Test
+        fun sortModeChanges_updatesTaskOrder() {
+            // Set up tasks with distinct names and dates for clear sorting results
+            val testTasksForSorting = listOf(
+                Task(
+                    id = "task1",
+                    name = "Alpha Task", // First alphabetically
+                    description = "Description",
+                    creationDate = Timestamp(Timestamp.now().seconds - 7200, 0), // Oldest
+                    status = TaskStatus.TODO,
+                    assignedMembers = emptyList()
+                ),
+                Task(
+                    id = "task2",
+                    name = "Beta Task", // Middle alphabetically
+                    description = "Description",
+                    creationDate = Timestamp(Timestamp.now().seconds - 3600, 0), // Middle age
+                    status = TaskStatus.IN_PROGRESS,
+                    assignedMembers = emptyList()
+                ),
+                Task(
+                    id = "task3",
+                    name = "Zeta Task", // Last alphabetically
+                    description = "Description",
+                    creationDate = Timestamp.now(), // Newest
+                    status = TaskStatus.DONE,
+                    assignedMembers = emptyList()
+                )
+            )
+
+            // Create mutable state flows for sort mode and tasks
+            val sortModeFlow = MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
+            val sortedTasksFlow = MutableStateFlow(testTasksForSorting.sortedByDescending { it.creationDate })
+
+            every { mockViewModel.taskSortMode } returns sortModeFlow
+            every { mockViewModel.sortedTasks } returns sortedTasksFlow
+
+            // Mock toggleSortMode to update both mode and task order
+            every { mockViewModel.toggleSortMode() } answers {
+                when (sortModeFlow.value) {
+                    HomeViewModel.TaskSortMode.DATE_DESC -> {
+                        sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_ASC
+                        sortedTasksFlow.value = testTasksForSorting.sortedBy { it.name }
+                    }
+
+                    HomeViewModel.TaskSortMode.NAME_ASC -> {
+                        sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_DESC
+                        sortedTasksFlow.value = testTasksForSorting.sortedByDescending { it.name }
+                    }
+
+                    HomeViewModel.TaskSortMode.NAME_DESC -> {
+                        sortModeFlow.value = HomeViewModel.TaskSortMode.DATE_DESC
+                        sortedTasksFlow.value = testTasksForSorting.sortedByDescending { it.creationDate }
+                    }
+                }
+            }
+
+            // Set up the HomeScreen
+            setupHomeScreen()
+
+            // Assert initial DATE_DESC order: Zeta (newest), Beta, Alpha (oldest)
+            composeTestRule.onNodeWithText("Zeta Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+            composeTestRule.onNodeWithText("Beta Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Alpha Task"))
+
+            // Click sort button to change to NAME_ASC mode
+            composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
+            composeTestRule.waitForIdle()
+            composeTestRule.mainClock.advanceTimeBy(300)
+
+            // Assert NAME_ASC order: Alpha, Beta, Zeta
+            composeTestRule.onNodeWithText("Alpha Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+            composeTestRule.onNodeWithText("Beta Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Zeta Task"))
+
+            // Click sort button to change to NAME_DESC mode
+            composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
+            composeTestRule.waitForIdle()
+            composeTestRule.mainClock.advanceTimeBy(300)
+
+            // Assert NAME_DESC order: Zeta, Beta, Alpha
+            composeTestRule.onNodeWithText("Zeta Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+            composeTestRule.onNodeWithText("Beta Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Alpha Task"))
+
+            // Click sort button to return to DATE_DESC mode
+            composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
+            composeTestRule.waitForIdle()
+            composeTestRule.mainClock.advanceTimeBy(300)
+
+            // Assert DATE_DESC order again: Zeta (newest), Beta, Alpha (oldest)
+            composeTestRule.onNodeWithText("Zeta Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+            composeTestRule.onNodeWithText("Beta Task")
+                .assertIsAbove(composeTestRule.onNodeWithText("Alpha Task"))
+        }
         composeTestRule.onNodeWithText("0 assigned members").assertIsDisplayed()
         composeTestRule.onNodeWithText("2 assigned members").assertIsDisplayed()
     }
@@ -616,5 +714,108 @@ class HomeScreenTest {
         // Then - verify the second team's task is now displayed
         composeTestRule.onNodeWithText("Team Alpha Task").assertDoesNotExist()
         composeTestRule.onNodeWithText("Team Beta Task").assertIsDisplayed()
+    }
+
+    /**
+     * Test that verifies the correct ordering of tasks when the sorting mode changes.
+     */
+    @Test
+    fun sortModeChanges_updatesTaskOrder() {
+        // Set up tasks with distinct names and dates for clear sorting results
+        val testTasksForSorting = listOf(
+            Task(
+                id = "task1",
+                name = "Alpha Task", // First alphabetically
+                description = "Description",
+                creationDate = Timestamp(Timestamp.now().seconds - 7200, 0), // Oldest
+                status = TaskStatus.TODO,
+                assignedMembers = emptyList()
+            ),
+            Task(
+                id = "task2",
+                name = "Beta Task", // Middle alphabetically
+                description = "Description",
+                creationDate = Timestamp(Timestamp.now().seconds - 3600, 0), // Middle age
+                status = TaskStatus.IN_PROGRESS,
+                assignedMembers = emptyList()
+            ),
+            Task(
+                id = "task3",
+                name = "Zeta Task", // Last alphabetically
+                description = "Description",
+                creationDate = Timestamp.now(), // Newest
+                status = TaskStatus.DONE,
+                assignedMembers = emptyList()
+            )
+        )
+
+        // Create mutable state flows for sort mode and tasks
+        val sortModeFlow = MutableStateFlow(HomeViewModel.TaskSortMode.DATE_DESC)
+        val sortedTasksFlow = MutableStateFlow(testTasksForSorting.sortedByDescending { it.creationDate })
+
+        every { mockViewModel.taskSortMode } returns sortModeFlow
+        every { mockViewModel.sortedTasks } returns sortedTasksFlow
+
+        // Mock toggleSortMode to update both mode and task order
+        every { mockViewModel.toggleSortMode() } answers {
+            when (sortModeFlow.value) {
+                HomeViewModel.TaskSortMode.DATE_DESC -> {
+                    sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_ASC
+                    sortedTasksFlow.value = testTasksForSorting.sortedBy { it.name }
+                }
+
+                HomeViewModel.TaskSortMode.NAME_ASC -> {
+                    sortModeFlow.value = HomeViewModel.TaskSortMode.NAME_DESC
+                    sortedTasksFlow.value = testTasksForSorting.sortedByDescending { it.name }
+                }
+
+                HomeViewModel.TaskSortMode.NAME_DESC -> {
+                    sortModeFlow.value = HomeViewModel.TaskSortMode.DATE_DESC
+                    sortedTasksFlow.value = testTasksForSorting.sortedByDescending { it.creationDate }
+                }
+            }
+        }
+
+        // Set up the HomeScreen
+        setupHomeScreen()
+
+        // Assert initial DATE_DESC order: Zeta (newest), Beta, Alpha (oldest)
+        composeTestRule.onNodeWithText("Zeta Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+        composeTestRule.onNodeWithText("Beta Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Alpha Task"))
+
+        // Click sort button to change to NAME_ASC mode
+        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(300)
+
+        // Assert NAME_ASC order: Alpha, Beta, Zeta
+        composeTestRule.onNodeWithText("Alpha Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+        composeTestRule.onNodeWithText("Beta Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Zeta Task"))
+
+        // Click sort button to change to NAME_DESC mode
+        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(300)
+
+        // Assert NAME_DESC order: Zeta, Beta, Alpha
+        composeTestRule.onNodeWithText("Zeta Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+        composeTestRule.onNodeWithText("Beta Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Alpha Task"))
+
+        // Click sort button to return to DATE_DESC mode
+        composeTestRule.onNodeWithContentDescription("Sort tasks").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.mainClock.advanceTimeBy(300)
+
+        // Assert DATE_DESC order again: Zeta (newest), Beta, Alpha (oldest)
+        composeTestRule.onNodeWithText("Zeta Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Beta Task"))
+        composeTestRule.onNodeWithText("Beta Task")
+            .assertIsAbove(composeTestRule.onNodeWithText("Alpha Task"))
     }
 }
