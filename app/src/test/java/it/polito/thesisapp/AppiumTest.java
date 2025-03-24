@@ -31,7 +31,7 @@ public class AppiumTest {
     public void setup() throws URISyntaxException, MalformedURLException {
         UiAutomator2Options options = new UiAutomator2Options()
                 .setDeviceName("emulator-5554")
-                .setApp("C:/Users/pole9/Desktop/Poli/Tesi/App_tesi/ThesisApp/app/build/intermediates/apk/debug/app-debug.apk")
+                .setApp("C:/Users/pole9/Desktop/Poli/Tesi/App/ThesisApp/app/build/intermediates/apk/debug/app-debug.apk")
                 .setAutomationName("UiAutomator2");
 
         driver = new AndroidDriver(new URI("http://127.0.0.1:4723").toURL(), options);
