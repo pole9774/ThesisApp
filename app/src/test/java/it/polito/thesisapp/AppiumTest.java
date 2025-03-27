@@ -1,7 +1,11 @@
 package it.polito.thesisapp;
 
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -13,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.List;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
@@ -358,6 +363,169 @@ public class AppiumTest {
             Assert.fail("Element not found: " + e.getMessage());
         } catch (Exception e) {
             Assert.fail("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void taskCard_showsCorrectAssignedMembersCount() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            ));
+
+            WebElement sort_tasks_button = driver.findElement(AppiumBy.xpath("//android.view.View[@content-desc='Sort tasks']"));
+            Assert.assertTrue(sort_tasks_button.isDisplayed(), "Sort Tasks button is not visible!");
+            System.out.println("Sort Tasks button exists!");
+
+            sort_tasks_button.click();
+
+            WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            wait1.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            ));
+
+            WebElement first_task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
+            Assert.assertTrue(first_task_view.isDisplayed(), "View is not visible!");
+            System.out.println("View exists!");
+
+            WebElement task_name1 = first_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text='dfdfs']"));
+            Assert.assertTrue(task_name1.isDisplayed(), "Task name (1) is not visible!");
+            System.out.println("Task name (1) exists!");
+
+            WebElement task_members1 = first_task_view.findElement(AppiumBy.xpath("(//android.widget.TextView[@text='0 assigned members'])[1]"));
+            Assert.assertTrue(task_members1.isDisplayed(), "Task members (1) is not visible!");
+            System.out.println("Task members (1) exists!");
+
+            sort_tasks_button.click();
+
+            WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            wait2.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            ));
+
+            WebElement last_task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
+            Assert.assertTrue(last_task_view.isDisplayed(), "View is not visible!");
+            System.out.println("View exists!");
+
+            WebElement task_name2 = last_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text='task Aa']"));
+            Assert.assertTrue(task_name2.isDisplayed(), "Task name (2) is not visible!");
+            System.out.println("Task name (2) exists!");
+
+            WebElement task_members2 = last_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text='2 assigned members']"));
+            Assert.assertTrue(task_members2.isDisplayed(), "Task members (2) is not visible!");
+            System.out.println("Task members (2) exists!");
+
+            sort_tasks_button.click();
+
+            WebDriverWait wait3 = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            wait3.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            ));
+
+            WebElement task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
+            Assert.assertTrue(task_view.isDisplayed(), "View is not visible!");
+            System.out.println("View exists!");
+
+            WebElement task_name3 = task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text='erwrwrw']"));
+            Assert.assertTrue(task_name3.isDisplayed(), "Task name (3) is not visible!");
+            System.out.println("Task name (3) exists!");
+
+            WebElement task_members3 = task_view.findElement(AppiumBy.xpath("(//android.widget.TextView[@text='0 assigned members'])[1]"));
+            Assert.assertTrue(task_members3.isDisplayed(), "Task members (3) is not visible!");
+            System.out.println("Task members (3) exists!");
+        } catch (NoSuchElementException e) {
+            Assert.fail("Element not found: " + e.getMessage());
+        } catch (Exception e) {
+            Assert.fail("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void teamCard_showsCorrectMemberCount() {
+        try {
+            WebElement team_name = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='Team A']"));
+            Assert.assertTrue(team_name.isDisplayed(), "Team name is not visible!");
+            System.out.println("Team name exists!");
+
+            WebElement team_members = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text='3 members'])[1]"));
+            Assert.assertTrue(team_members.isDisplayed(), "Team members is not visible!");
+            System.out.println("Team members exists!");
+
+            WebElement team_name2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='Team B']"));
+            Assert.assertTrue(team_name2.isDisplayed(), "Team name (2) is not visible!");
+            System.out.println("Team name (2) exists!");
+
+            WebElement team_members2 = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text='3 members'])[2]"));
+            Assert.assertTrue(team_members2.isDisplayed(), "Team members (2) is not visible!");
+            System.out.println("Team members (2) exists!");
+        } catch (NoSuchElementException e) {
+            Assert.fail("Element not found: " + e.getMessage());
+        } catch (Exception e) {
+            Assert.fail("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void sectionHeaders_areDisplayedCorrectly() {
+        try {
+            WebElement teams_text = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='My Teams']"));
+            Assert.assertTrue(teams_text.isDisplayed(), "My Teams title is not visible!");
+            System.out.println("My Teams title exists!");
+
+            WebElement tasks_text = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='Tasks']"));
+            Assert.assertTrue(tasks_text.isDisplayed(), "Tasks title is not visible!");
+            System.out.println("Tasks title exists!");
+        } catch (NoSuchElementException e) {
+            Assert.fail("Element not found: " + e.getMessage());
+        } catch (Exception e) {
+            Assert.fail("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void teamPager_swipeUpdatesSelectedTeam() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//android.widget.TextView[@text='Team A']")
+            ));
+
+            WebElement teamView = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[1]"));
+
+            Dimension size = teamView.getSize();
+            Point location = teamView.getLocation();
+
+            int startX = location.getX() + (int) (size.width * 0.6);
+            int endX = location.getX() + (int) (size.width * 0.2);
+            int y = location.getY() + size.height / 2;
+
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence scrollSequence = new Sequence(finger, 0);
+            scrollSequence.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), startX, y));
+            scrollSequence.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scrollSequence.addAction(finger.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), endX, y));
+            scrollSequence.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            driver.perform(List.of(scrollSequence));
+
+            WebElement task_name = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='sdada']"));
+            Assert.assertTrue(task_name.isDisplayed(), "Task name is not visible!");
+            System.out.println("Task name exists!");
+
+            WebElement team = teamView.findElement(AppiumBy.xpath("//android.widget.TextView[@text='vsdfsd']"));
+            Assert.assertTrue(team.isDisplayed(), "The team searched is not visible!");
+            System.out.println("The team exists!");
+
+            WebElement homeButton = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='Home']"));
+            homeButton.click();
+        } catch (NoSuchElementException e) {
+            Assert.fail("The team does not exist!");
         }
     }
 
