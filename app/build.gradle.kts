@@ -92,6 +92,12 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    testImplementation(libs.appium.java.client)
+    testImplementation(libs.selenium.java)
+    testImplementation(libs.testng)
+    testImplementation(libs.slf4j.api)
+    testImplementation(libs.slf4j.simple)
 }
 
 kapt {
