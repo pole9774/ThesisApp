@@ -114,6 +114,6 @@ object Constants {
      * Object containing user-related constants
      */
     object User {
-        const val USER_ID = "1kCdRXoPkwmsNI5QRKn9"
+        const val USER_ID = "8dqEOxI68pXDvLrnScnY"
     }
 }

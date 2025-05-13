@@ -157,7 +157,6 @@ public class AppiumTest {
             team_name.click();
 
             // Wait for the page to load (the title 'Team Alpha' should be displayed)
-            // TODO: verify if it is necessary
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOfElementLocated(
                     AppiumBy.xpath("//android.widget.TextView[@text=\"Team Alpha\"]")
@@ -182,12 +181,10 @@ public class AppiumTest {
     public void taskCard_clickTriggersNavigation_homePage() {
         try {
             // Click the home button for a "stable" task list
-            // TODO: verify if it is necessary
             WebElement homeButton = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Home\"]"));
             homeButton.click();
 
             // Wait for the first task to be displayed
-            // TODO: verify if it is necessary
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOfElementLocated(
                     AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]")
@@ -281,11 +278,10 @@ public class AppiumTest {
     @Test
     public void sortButton_callsToggleSortMode() {
         try {
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
+            // Wait for the first task to be visible
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]")
             ));
 
             // Search for the sort button, verify it is displayed and click on it (tasks now ordered a-z)
@@ -293,49 +289,37 @@ public class AppiumTest {
             Assert.assertTrue(sort_tasks_button.isDisplayed(), "Sort Tasks button is not visible!");
             sort_tasks_button.click();
 
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
-            WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait1.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            // Wait for the first task to be visible
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task A\"]")
             ));
 
-            // Search for the view that contains the first task and verify it contains the first task alphabetically
-            WebElement first_task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
-            Assert.assertTrue(first_task_view.isDisplayed(), "View is not visible!");
-            WebElement task_name1 = first_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            // Search for the first task alphabetically
+            WebElement task_name1 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task A\"]"));
             Assert.assertTrue(task_name1.isDisplayed(), "Task name (1) is not visible!");
 
             // Click the sort button (tasks now ordered z-a)
             sort_tasks_button.click();
 
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
-            WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait2.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            // Wait for the first task to be visible
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task F\"]")
             ));
 
-            // Search for the view that contains the first task and verify it contains the last task alphabetically
-            WebElement last_task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
-            Assert.assertTrue(last_task_view.isDisplayed(), "View is not visible!");
-            WebElement task_name2 = last_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task 2\"]"));
+            // Search for the last task alphabetically
+            WebElement task_name2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task F\"]"));
             Assert.assertTrue(task_name2.isDisplayed(), "Task name (2) is not visible!");
 
             // Click the sort button (tasks now not ordered)
             sort_tasks_button.click();
 
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
-            WebDriverWait wait3 = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait3.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            // Wait for the first task to be visible
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]")
             ));
 
-            // Search for the view that contains the first task and verify it contains the expected task
-            WebElement task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
-            Assert.assertTrue(task_view.isDisplayed(), "View is not visible!");
-            WebElement task_name3 = task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            // Search for the expected task
+            WebElement task_name3 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task_name3.isDisplayed(), "Task name (3) is not visible!");
         } catch (NoSuchElementException e) {
             Assert.fail("Element not found: " + e.getMessage());
@@ -395,11 +379,10 @@ public class AppiumTest {
     @Test
     public void taskCard_showsCorrectAssignedMembersCount() {
         try {
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
+            // Wait for the first task to be visible
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]")
             ));
 
             // Search for the sort button, verify it is displayed and click on it (tasks now ordered a-z)
@@ -407,61 +390,49 @@ public class AppiumTest {
             Assert.assertTrue(sort_tasks_button.isDisplayed(), "Sort Tasks button is not visible!");
             sort_tasks_button.click();
 
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
-            WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait1.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            // Wait for the first task to be visible
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task A\"]")
             ));
 
-            // Search for the view that contains the first task and verify it contains the first task alphabetically
-            WebElement first_task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
-            Assert.assertTrue(first_task_view.isDisplayed(), "View is not visible!");
-            WebElement task_name1 = first_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            // Search for the first task alphabetically
+            WebElement task_name1 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task A\"]"));
             Assert.assertTrue(task_name1.isDisplayed(), "Task name (1) is not visible!");
 
             // Search for the number of assigned members on the task and verify it is displayed and it is correct
-            WebElement task_members1 = first_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"0 assigned members\"]"));
+            WebElement task_members1 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"2 assigned members\"]"));
             Assert.assertTrue(task_members1.isDisplayed(), "Task members (1) is not visible!");
 
             // Click the sort button (tasks now ordered z-a)
             sort_tasks_button.click();
 
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
-            WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait2.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            // Wait for the first task to be visible
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task F\"]")
             ));
 
-            // Search for the view that contains the first task and verify it contains the last task alphabetically
-            WebElement last_task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
-            Assert.assertTrue(last_task_view.isDisplayed(), "View is not visible!");
-            WebElement task_name2 = last_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task 2\"]"));
+            // Search for the last task alphabetically
+            WebElement task_name2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task F\"]"));
             Assert.assertTrue(task_name2.isDisplayed(), "Task name (2) is not visible!");
 
             // Search for the number of assigned members on the task and verify it is displayed and it is correct
-            WebElement task_members2 = last_task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"1 assigned members\"]"));
+            WebElement task_members2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"0 assigned members\"]"));
             Assert.assertTrue(task_members2.isDisplayed(), "Task members (2) is not visible!");
 
             // Click the sort button (tasks now not ordered)
             sort_tasks_button.click();
 
-            // Wait for the view that contains the first task to be visible
-            // TODO: verify if it is necessary
-            WebDriverWait wait3 = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait3.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]")
+            // Wait for the first task to be visible
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]")
             ));
 
-            // Search for the view that contains the first task and verify it contains the expected task
-            WebElement task_view = driver.findElement(AppiumBy.xpath("//androidx.compose.ui.platform.ComposeView/android.view.View/android.view.View/android.view.View[1]/android.view.View[3]/android.view.View[1]"));
-            Assert.assertTrue(task_view.isDisplayed(), "View is not visible!");
-            WebElement task_name3 = task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            // Search for the expected task
+            WebElement task_name3 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task_name3.isDisplayed(), "Task name (3) is not visible!");
 
             // Search for the number of assigned members on the task and verify it is displayed and it is correct
-            WebElement task_members3 = task_view.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"0 assigned members\"]"));
+            WebElement task_members3 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"1 assigned members\"]"));
             Assert.assertTrue(task_members3.isDisplayed(), "Task members (3) is not visible!");
         } catch (NoSuchElementException e) {
             Assert.fail("Element not found: " + e.getMessage());
