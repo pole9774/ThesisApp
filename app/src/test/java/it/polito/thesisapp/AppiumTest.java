@@ -110,19 +110,19 @@ public class AppiumTest {
         try {
             // We are in the home page, 'Team Alpha' is selected
             // Search for the first task name and verify it is displayed
-            WebElement task_name1 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            WebElement task_name1 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task_name1.isDisplayed(), "First task name is not visible!");
 
             // Search for the first task description and verify it is displayed
-            WebElement task_description1 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"This is the final task\"]"));
+            WebElement task_description1 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"This is task C\"]"));
             Assert.assertTrue(task_description1.isDisplayed(), "First task description is not visible!");
 
             // Search for the second task name and verify it is displayed
-            WebElement task_name2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task 2\"]"));
+            WebElement task_name2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task D\"]"));
             Assert.assertTrue(task_name2.isDisplayed(), "Second task name is not visible!");
 
             // Search for the second task description and verify it is displayed
-            WebElement task_description2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"This is the second task\"]"));
+            WebElement task_description2 = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"This is task D\"]"));
             Assert.assertTrue(task_description2.isDisplayed(), "Second task description is not visible!");
         } catch (NoSuchElementException e) {
             Assert.fail("Element not found: " + e.getMessage());
@@ -187,20 +187,20 @@ public class AppiumTest {
             // Wait for the first task to be displayed
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]")
+                    AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]")
             ));
 
             // Search for the first task, verify it is displayed and open it (by clicking on it)
-            WebElement task = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            WebElement task = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task.isDisplayed(), "Task is not visible!");
             task.click();
 
             // Search for the task name (title) and verify it is displayed
-            WebElement task_name = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            WebElement task_name = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task_name.isDisplayed(), "Task name (task page) is not visible!");
 
             // Search for the task description under the title and verify it is displayed
-            WebElement task_description = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is the final task\"])[1]"));
+            WebElement task_description = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is task C\"])[1]"));
             Assert.assertTrue(task_description.isDisplayed(), "Task description (task page) is not visible!");
 
             // Search for the task status and verify it is displayed
@@ -210,13 +210,13 @@ public class AppiumTest {
             // Search for the description part and verify it is displayed
             WebElement description_title = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Description\"]"));
             Assert.assertTrue(description_title.isDisplayed(), "Description title is not visible!");
-            WebElement task_description2 = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is the final task\"])[2]"));
+            WebElement task_description2 = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is task C\"])[2]"));
             Assert.assertTrue(task_description2.isDisplayed(), "Task description 2 (task page) is not visible!");
 
             // Search for the assigned members part and verify it is displayed
             WebElement members_title = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Assigned Members\"]"));
             Assert.assertTrue(members_title.isDisplayed(), "Assigned Members title is not visible!");
-            WebElement task_members = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"0 members assigned\"]"));
+            WebElement task_members = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"1 members assigned\"]"));
             Assert.assertTrue(task_members.isDisplayed(), "Task members (task page) is not visible!");
 
             // Click the back button of the device to return to the home page
@@ -237,16 +237,16 @@ public class AppiumTest {
             team_name.click();
 
             // Open the first task
-            WebElement task = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            WebElement task = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task.isDisplayed(), "Task is not visible!");
             task.click();
 
             // Search for the task name (title) and verify it is displayed
-            WebElement task_name = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            WebElement task_name = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task_name.isDisplayed(), "Task name (task page) is not visible!");
 
             // Search for the task description under the title and verify it is displayed
-            WebElement task_description = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is the final task\"])[1]"));
+            WebElement task_description = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is task C\"])[1]"));
             Assert.assertTrue(task_description.isDisplayed(), "Task description (task page) is not visible!");
 
             // Search for the task status and verify it is displayed
@@ -256,13 +256,13 @@ public class AppiumTest {
             // Search for the description part and verify it is displayed
             WebElement description_title = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Description\"]"));
             Assert.assertTrue(description_title.isDisplayed(), "Description title is not visible!");
-            WebElement task_description2 = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is the final task\"])[2]"));
+            WebElement task_description2 = driver.findElement(AppiumBy.xpath("(//android.widget.TextView[@text=\"This is task C\"])[2]"));
             Assert.assertTrue(task_description2.isDisplayed(), "Task description 2 (task page) is not visible!");
 
             // Search for the assigned members part and verify it is displayed
             WebElement members_title = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Assigned Members\"]"));
             Assert.assertTrue(members_title.isDisplayed(), "Assigned Members title is not visible!");
-            WebElement task_members = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"0 members assigned\"]"));
+            WebElement task_members = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"1 members assigned\"]"));
             Assert.assertTrue(task_members.isDisplayed(), "Task members (task page) is not visible!");
 
             // Click the back button of the device 2 times to return to the home page
@@ -500,13 +500,13 @@ public class AppiumTest {
 
             // Swipe until the first task of the first team is visible
             swipes = 0;
-            while (driver.findElements(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]")).isEmpty() && swipes < maxSwipes) {
+            while (driver.findElements(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]")).isEmpty() && swipes < maxSwipes) {
                 swipeRight(teams_view_xpath);
                 swipes++;
             }
 
             // Verify the first task of the first team is visible
-            WebElement task_first = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Final task\"]"));
+            WebElement task_first = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"Task C\"]"));
             Assert.assertTrue(task_first.isDisplayed(), "The task is not displayed!");
         } catch (NoSuchElementException e) {
             Assert.fail("Element not found: " + e.getMessage());
